@@ -7,11 +7,11 @@ import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';
 import { Link, useIntl, connect } from 'umi';
 import { Result, Button } from 'antd';
-import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { getAuthorityFromRouter } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
 import config from "@/../config/defaultSettings"
+import Authorized from "../components/Authorized/Authorized";
 
 const noMatch = (
     <Result

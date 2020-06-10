@@ -61,8 +61,8 @@ export function createBaseModel(services, refreshList = true) {
                 }))
                 message.success("删除成功")
             },
-            * update({ payload, callback }, { call, put }) {
-                const response = yield call(services.put, payload)
+            *update({ payload, callback }, { call, put }) {
+                const response = yield call(services.patch, payload)
                 yield put({
                     type: "save",
                     payload: {

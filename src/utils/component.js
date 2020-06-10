@@ -222,17 +222,10 @@ export function createInput(
     // set the decoratorProps
     switch (type) {
         case "MultiSelect":
-            initialValue =
-                (data && selectValueConvert(item, data[item.dataIndex])) ||
-                getItemDefaultValue(item)
-            break
         case "Select":
             initialValue =
-                data && selectValueConvert(item, data[item.dataIndex])
-            initialValue = !lodash.isNil(initialValue)
-                ? initialValue
-                : getItemDefaultValue(item)
-
+                data && selectValueConvert(item, data[item.dataIndex]) ||
+                getItemDefaultValue(item)
             break
         case "DatePicker":
             initialValue = initialValue
@@ -562,7 +555,7 @@ function selectValueConvert(item, initialValue) {
     }
 
     if (item.type === schemaFieldType.Select) {
-        if (!item.dict || !Object.values(item.dict)[0]) {
+        if (!item.dict || !Object.values(item.dict)[0] || initialValue instanceof Array) {
             return result
         }
 

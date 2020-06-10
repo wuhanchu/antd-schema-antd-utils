@@ -1,7 +1,7 @@
 import StandardTable from "../StandardTable"
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Col, Divider, message, Popconfirm, Row, Spin, Upload } from "antd";
+import { Button, Card, Col, Divider, message, Popconfirm, Row } from "antd";
 import isEqual from "lodash.isequal"
 import React, { Fragment, PureComponent } from "react"
 import { createFilter, getListColumn } from "../../utils/component"
@@ -10,9 +10,9 @@ import styles from "./DataList.less"
 import InfoModal from "./InfoModal"
 import frSchema from "@/outter/fr-schema/src"
 import { exportData } from "../../utils/xlsx"
-import moment from "moment"
 import ImportModal from "@/outter/fr-schema-antd-utils/src/components/modal/ImportModal"
 import { exportDataByTemplate } from "@/outter/fr-schema-antd-utils/src/utils/xlsx"
+import * as _ from "lodash"
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
 const getValue = obj =>
@@ -120,7 +120,7 @@ class DataList extends PureComponent {
                 add: this.meta.authorityKey + "_post",
                 update: this.meta.authorityKey + "_patch",
                 delete: this.meta.authorityKey + "_delete",
-                export: this.meta.authorityKey + "_get",
+                export: this.meta.authorityKey + "_export",
                 show: this.meta.authorityKey + "_get_by_id"
             }
         }
@@ -157,6 +157,7 @@ class DataList extends PureComponent {
 
         operationBar && columns.push(operationBar)
         this.columns = columns
+        console.debug("this.columns", this.columns)
         return this.columns
     }
 
@@ -302,16 +303,29 @@ class DataList extends PureComponent {
     async requestList(tempArgs = {}) {
         const { queryArgs } = this.meta
 
+        let searchParams = this.getSearchParam()
+
         const params = {
             ...(queryArgs || {}),
-            ...(this.state.searchValues || {}),
+            ...searchParams,
             ...(this.state.pagination || {}),
             ...tempArgs
         }
-        let data = await this.service.get(params)
 
+        let data = await this.service.get(params)
         data = this.dataConvert(data)
         return data
+    }
+
+    /**
+     * get current search param
+     */
+    getSearchParam() {
+        let searchParams = {}
+        this.state.searchValues && Object.keys(this.state.searchValues).forEach(key => {
+            !_.isNil(this.state.searchValues[key]) && (searchParams[key] = (this.schema[key] && this.schema[key].searchPrefix || "") + this.state.searchValues[key])
+        })
+        return searchParams
     }
 
     /**
@@ -382,6 +396,7 @@ class DataList extends PureComponent {
         const { form } = this.props
         form.validateFields((err, fieldsValue) => {
             if (err) return
+
             const allValues = form.getFieldsValue()
             const values = {
                 ...allValues,
@@ -470,6 +485,7 @@ class DataList extends PureComponent {
 
         // 修改当前数据
         const idKey = getPrimaryKey(this.schema)
+
         this.state.data &&
         this.state.data.list.some((item, index) => {
             if (data[idKey] == item[idKey]) {
@@ -480,12 +496,15 @@ class DataList extends PureComponent {
                 return true
             }
         })
+
+        //
         this.setState({
             data: this.state.data
         })
         this.refreshList()
         message.success("修改成功")
 
+        //
         this.handleVisibleModal()
         this.handleChangeCallback && this.handleChangeCallback()
         this.props.handleChangeCallback && this.props.handleChangeCallback()
