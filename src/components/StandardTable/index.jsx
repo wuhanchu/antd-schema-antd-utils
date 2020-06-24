@@ -90,6 +90,10 @@ class StandardTable extends PureComponent {
                 disabled: record.disabled
             })
         }
+        let tableWidth
+        if(document.getElementById("table")){
+            tableWidth = document.getElementById("table").offsetWidth
+        }
 
         return (
             <div className={styles.standardTable}>
@@ -131,6 +135,7 @@ class StandardTable extends PureComponent {
                     </div>
                 )}
                 <Table
+                    id={'table'}
                     loading={loading}
                     bordered={true}
                     rowKey={rowKey || "key"}
@@ -140,6 +145,7 @@ class StandardTable extends PureComponent {
                     pagination={paginationProps}
                     onChange={this.handleTableChange}
                     {...otherProps}
+                    scroll={{ x: columns.length * 100 >tableWidth ? columns.length * 100: null }}
                     size={"middle"}
                 />
             </div>
