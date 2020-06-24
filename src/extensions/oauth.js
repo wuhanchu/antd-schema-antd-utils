@@ -7,4 +7,3 @@ export default new ClientOAuth2({
     accessTokenUri: "/auth/oauth2/token",
     authorizationUri: "/auth/oauth2/token?grant_type=refresh_token",
     scopes: "server"
-})
