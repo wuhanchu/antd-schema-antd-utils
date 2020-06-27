@@ -1,4 +1,4 @@
-import React, { Fragment } from "react"
+import React, { Fragment } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
@@ -14,24 +14,24 @@ import {
     Tooltip,
     Transfer,
     Upload,
-} from "antd";
+} from 'antd';
 
-import dictComponents from "./componentDict"
-import frSchema from "@/outter/fr-schema/src"
-import styles from "../styles/basic.less"
-import clone from "clone"
-import { globalStyle } from "../styles/global"
-import moment from "moment"
-import lodash from "lodash"
+import dictComponents from './componentDict';
+import frSchema from '@/outter/fr-schema/src';
+import styles from '../styles/basic.less';
+import clone from 'clone';
+import { globalStyle } from '../styles/global';
+import moment from 'moment';
+import lodash from 'lodash';
 
-const _ = lodash
-const SelectOption = Select.Option
-const MentionsOption = Mentions.Option
+const _ = lodash;
+const SelectOption = Select.Option;
+const MentionsOption = Mentions.Option;
 
-const FormItem = Form.Item
-const TabPane = Tabs.TabPane
+const FormItem = Form.Item;
+const TabPane = Tabs.TabPane;
 
-const { actions, dict, schemaFieldType } = frSchema
+const { actions, dict, schemaFieldType } = frSchema;
 
 /**
  * get the table column
@@ -39,7 +39,7 @@ const { actions, dict, schemaFieldType } = frSchema
  * @returns {Array}
  */
 export function getListColumn(schema, fieldConfList) {
-    let oneRow = []
+    let oneRow = [];
     Object.keys(schema)
         .sort((a, b) => {
             return (
@@ -51,21 +51,21 @@ export function getListColumn(schema, fieldConfList) {
                 schema[b].orderIndex === null
                     ? 9999
                     : schema[b].orderIndex)
-            )
+            );
         })
         .forEach((key, index) => {
-            const item = schema[key]
+            const item = schema[key];
             if (
                 item.listHide ||
                 (fieldConfList && !fieldConfList.includes(key))
             ) {
-                return
+                return;
             }
 
-            oneRow.push(fieldToColumn(key, item))
-        })
+            oneRow.push(fieldToColumn(key, item));
+        });
 
-    return oneRow
+    return oneRow;
 }
 
 /**
@@ -75,19 +75,19 @@ export function getListColumn(schema, fieldConfList) {
  * @returns {Array}
  */
 export function getExportColumn(schema, fieldConfList) {
-    let oneRow = []
+    let oneRow = [];
     Object.keys(schema).forEach(key => {
-        const item = schema[key]
+        const item = schema[key];
         if (item.addHide || (fieldConfList && !fieldConfList.includes(key))) {
-            return
+            return;
         }
 
-        oneRow.push(fieldToColumn(key, item))
-    })
+        oneRow.push(fieldToColumn(key, item));
+    });
 
     return oneRow.sort((a, b) => {
-        return (a.orderIndex || 9999) - (b.orderIndex || 9999)
-    })
+        return (a.orderIndex || 9999) - (b.orderIndex || 9999);
+    });
 }
 
 /**
@@ -102,35 +102,35 @@ function fieldToColumn(key, item) {
         key,
         dataIndex:
             item.dict ||
-            item.type === "DatePicker" ||
-            item.type === "Select" ||
+            item.type === 'DatePicker' ||
+            item.type === 'Select' ||
             item.unit
-                ? key + "_remark"
+                ? key + '_remark'
                 : key,
         render:
             item.render ||
             (value => {
                 switch (item.type) {
-                    case "Avatar":
-                        return <Avatar src={value}/>
+                    case 'Avatar':
+                        return <Avatar src={value}/>;
                     default:
                         return (
                             <div
                                 style={{
                                     width: item.width,
-                                    wordWrap: "break-word",
-                                    wordBreak: "break-all",
-                                    textOverflow: "ellipsis",
-                                    overflow: "hidden"
+                                    wordWrap: 'break-word',
+                                    wordBreak: 'break-all',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden',
                                 }}
                             >
                                 {value}
                             </div>
-                        )
+                        );
                 }
-            })
-    }
-    return addItem
+            }),
+    };
+    return addItem;
 }
 
 /**
@@ -149,9 +149,9 @@ export function createInput(
     form,
     action = actions.add,
     itemProps = {},
-    colNum = 1
+    colNum = 1,
 ) {
-    const type = item.type || "Input"
+    const type = item.type || 'Input';
 
     // component props
     let props = {
@@ -162,78 +162,79 @@ export function createInput(
         disabled:
             action === actions.show ||
             (action === actions.edit && item.readOnly),
-        onChange: function (event) {
+        onChange: function(event) {
             const value =
-                event && event.currentTarget? event.currentTarget.value : event
+                event && event.currentTarget? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
-                let data = { ...this.state.data }
-                data[item.dataIndex] = value
-                this.setState({ data })
+                let data = { ...this.state.data };
+                data[item.dataIndex] = value;
+                this.setState({ data });
             }
             item.onChange &&
-            item.onChange.bind(this)(value, this && this.state, form)
+            item.onChange.bind(this)(value, this && this.state, form);
         }.bind(this),
-        ...item.props
-    }
+        ...item.props,
+    };
 
     //  create component
-    let component = null
-    let decoratorProps = {}
+    let component = null;
+    let decoratorProps = {};
 
     let defaultWidth =
-        (globalStyle.form.input.width*(colNum > 3? 3 : colNum))/colNum
+        (globalStyle.form.input.width*(colNum > 3? 3 : colNum))/colNum;
 
     // initialValue
-    let initialValue = data && data[item.dataIndex]
+    let initialValue = data && data[item.dataIndex];
 
     // 是否有定制方法
-    form && delete props.defaultValue
-    let tempData = data
+    form && delete props.defaultValue;
+    let tempData = data;
     if (item.type === schemaFieldType.Transfer) {
-        tempData = data[item.dataIndex]
+        tempData = data[item.dataIndex];
     }
 
     let tempProps = {
         style: item.style || { width: defaultWidth },
         placeholder: !props.readOnly? `请输入${item.title}` : null,
-        ...props
-    }
+        ...props,
+    };
+
     if (!form) {
-        tempProps.value = initialValue
+        tempProps.value = initialValue;
     }
 
     if (item.renderInput) {
         component = item.renderInput.bind(this)(
             item,
-            tempData,
+            form? tempData : null,
             tempProps,
-            action
-        )
+            action,
+        );
     } else {
         component = createComponent.bind(this)(
             item,
-            tempData,
+            form? tempData : null,
             tempProps,
             action,
-            defaultWidth
-        )
+            defaultWidth,
+        );
     }
 
     // set the decoratorProps
     switch (type) {
-        case "MultiSelect":
-        case "Select":
+        case 'MultiSelect':
+        case 'Select':
             initialValue =
                 data && selectValueConvert(item, data[item.dataIndex]) ||
-                getItemDefaultValue(item)
-            break
-        case "DatePicker":
+                getItemDefaultValue(item);
+            break;
+        case 'DatePicker':
             initialValue = initialValue
                 ? moment(initialValue, moment.ISO_8601)
-                : null
-            break
+                : null;
+            break;
     }
-    decoratorProps = convertDecoratorProps(item)
+    decoratorProps = convertDecoratorProps(item);
 
     // init data
     if (
@@ -241,12 +242,12 @@ export function createInput(
         action === actions.add &&
         (initialValue === null || initialValue === undefined)
     ) {
-        initialValue = component.props.defaultValue
-        delete component.props.defaultValue
+        initialValue = component.props.defaultValue;
+        delete component.props.defaultValue;
     }
 
     if (initialValue !== null && initialValue !== undefined) {
-        decoratorProps.initialValue = initialValue
+        decoratorProps.initialValue = initialValue;
     }
 
     //  delete the defaultValue
@@ -260,7 +261,7 @@ export function createInput(
                 <FormItem
                     key={item.dataIndex}
                     label={
-                        item.title + (item.unit? "(" + item.unit + ")" : "")
+                        item.title + (item.unit? '(' + item.unit + ')' : '')
                     }
                     extra={item.extra}
                     {...itemProps}
@@ -269,13 +270,13 @@ export function createInput(
                     {form
                         ? form.getFieldDecorator(
                             item.dataIndex,
-                            decoratorProps
+                            decoratorProps,
                         )(component)
                         : component}
                 </FormItem>
             </div>
         </Tooltip>
-    ) : null
+    ) : null;
 }
 
 /**
@@ -291,23 +292,23 @@ export function createComponent(
     data,
     extraProps = {},
     action = actions.add,
-    defaultWidth = 200
+    defaultWidth = 200,
 ) {
-    const type = item.type || "Input"
+    const type = item.type || 'Input';
     let component,
-        defaultValue = null
-    let options = []
+        defaultValue = null;
+    let options = [];
 
-    let props = { ...item.props, ...extraProps }
+    let props = { ...item.props, ...extraProps };
 
     if (data) {
-        props.value = data
+        props.value = data;
     }
 
     switch (type) {
-        case "Avatar":
-            component = <Avatar {...props} />
-            break
+        case 'Avatar':
+            component = <Avatar {...props} />;
+            break;
         case schemaFieldType.Transfer:
             component = (
                 <Transfer
@@ -316,32 +317,32 @@ export function createComponent(
                     showSearch
                     {...props}
                     onChange={(targetKeys, direction, moveKeys) => {
-                        props.onChange(targetKeys)
+                        props.onChange(targetKeys);
                     }}
                 />
-            )
-            break
-        case "MultiSelect":
-            const mode = "multiple"
+            );
+            break;
+        case 'MultiSelect':
+            const mode = 'multiple';
 
             //default value
             if (action === actions.add) {
                 Object.values(item.dict).forEach(dictItem => {
-                    defaultValue = getItemDefaultValue(item)
-                })
+                    defaultValue = getItemDefaultValue(item);
+                });
             }
-        case "Select":
+        case 'Select':
             //default value
             if (!defaultValue && action === actions.add && item.dict) {
                 Object.values(item.dict).some(dictItem => {
-                    defaultValue = getItemDefaultValue(item)
-                })
+                    defaultValue = getItemDefaultValue(item);
+                });
             }
 
             // options
             item.dict &&
             Object.values(item.dict).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     //check the dict Whether it matches
                     if (
                         dictItem.condition &&
@@ -349,22 +350,22 @@ export function createComponent(
                     ) {
                         if (dictItem.condition instanceof Function) {
                             if (!dictItem.condition(this.state.data)) {
-                                return
+                                return;
                             }
                         } else if (
                             Object.keys(dictItem.condition).some(
-                                function (key) {
+                                function(key) {
                                     return (
                                         !this ||
                                         !this.state ||
                                         !this.state.data ||
                                         this.state.data[key] !==
                                         dictItem.condition[key]
-                                    )
-                                }.bind(this)
+                                    );
+                                }.bind(this),
                             )
                         ) {
-                            return
+                            return;
                         }
                     }
 
@@ -376,24 +377,24 @@ export function createComponent(
                             value={dictItem.value}
                         >
                             {dictItem.remark}
-                        </SelectOption>
-                    )
-                }.bind(this)
-            )
+                        </SelectOption>,
+                    );
+                }.bind(this),
+            );
 
             // judge whether show search
             const searchOptions =
                 options.length > 10
                     ? {
                         showSearch: true,
-                        optionFilterProp: "children",
+                        optionFilterProp: 'children',
                         filterOption: (input, option) =>
                             option.props.children.toLowerCase &&
                             option.props.children
                                 .toLowerCase()
-                                .indexOf(input.toLowerCase()) >= 0
+                                .indexOf(input.toLowerCase()) >= 0,
                     }
-                    : {}
+                    : {};
 
             // create the select
             component = (
@@ -404,21 +405,21 @@ export function createComponent(
                     mode={mode}
                     // value={data}
                     optionFilterProp="children"
-                    placeholder={!props.readOnly && "请选择"}
+                    placeholder={!props.readOnly && '请选择'}
                     disabled={props.readOnly}
                     {...searchOptions}
                     {...props}
                 >
                     {options}
                 </Select>
-            )
-            break
+            );
+            break;
 
         case dictComponents.Mentions:
             // options
             item.options &&
             Object.values(item.options).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     // add to options
                     return options.push(
                         <MentionsOption
@@ -426,26 +427,26 @@ export function createComponent(
                             value={dictItem.value}
                         >
                             {dictItem.remark}
-                        </MentionsOption>
-                    )
-                }.bind(this)
-            )
+                        </MentionsOption>,
+                    );
+                }.bind(this),
+            );
 
             // create the components
             component = (
                 <Mentions rows="3" {...props}>
                     {options}
                 </Mentions>
-            )
-            break
+            );
+            break;
 
         // create the upload input
-        case "Upload":
+        case 'Upload':
             component = (
                 <Upload
                     multiple={false}
                     beforeUpload={file => {
-                        return false
+                        return false;
                     }}
                     {...props}
                 >
@@ -453,8 +454,8 @@ export function createComponent(
                         <UploadOutlined/> 选择文件
                     </Button>
                 </Upload>
-            )
-            break
+            );
+            break;
 
         // create the upload input
         // case schemaFieldType.Table:
@@ -468,12 +469,12 @@ export function createComponent(
             component = React.createElement(dictComponents[type], {
                 style: { width: defaultWidth },
                 placeholder: !props.readOnly && `请输入${item.title}`,
-                ...props
-            })
+                ...props,
+            });
     }
 
     //return
-    return component
+    return component;
 }
 
 /**
@@ -482,17 +483,17 @@ export function createComponent(
  * @returns {{rules: {message: (boolean|string), required: *}[]}}
  */
 export function convertDecoratorProps(item) {
-    const { rules, ...otherDecoratorProps } = item.decoratorProps || {}
+    const { rules, ...otherDecoratorProps } = item.decoratorProps || {};
     const decoratorProps = {
         rules: [
             {
                 required: item.required,
-                message: `请输入${item.title}！`
-            }
+                message: `请输入${item.title}！`,
+            },
         ].concat(rules || []),
-        ...(otherDecoratorProps || {})
-    }
-    return decoratorProps
+        ...(otherDecoratorProps || {}),
+    };
+    return decoratorProps;
 }
 
 /**
@@ -501,30 +502,30 @@ export function convertDecoratorProps(item) {
 function getItemDefaultValue(item) {
     // 多选下拉框
     if (item.type == schemaFieldType.MultiSelect) {
-        let defaultValue = []
+        let defaultValue = [];
         item.dict &&
         Object.values(item.dict).forEach(dictItem => {
             if (dictItem.default) {
-                defaultValue = defaultValue || []
-                defaultValue.push(dictItem.value)
+                defaultValue = defaultValue || [];
+                defaultValue.push(dictItem.value);
             }
-        })
+        });
 
-        return defaultValue || []
+        return defaultValue || [];
     }
     // 下拉框
     else if (item.type == schemaFieldType.Select) {
-        let defaultValue = null
+        let defaultValue = null;
         item.dict &&
         Object.values(item.dict).some(dictItem => {
             // 在from下的默认值由 form 来传入
             if (dictItem.default) {
-                defaultValue = dictItem.value
-                return true
+                defaultValue = dictItem.value;
+                return true;
             }
-        })
+        });
 
-        return defaultValue
+        return defaultValue;
     }
 }
 
@@ -535,43 +536,43 @@ function getItemDefaultValue(item) {
  * @returns {*}
  */
 function selectValueConvert(item, initialValue) {
-    let result = initialValue
+    let result = initialValue;
     if (result === null || result == undefined) {
-        return result
+        return result;
     }
 
     if (
         item.type === schemaFieldType.MultiSelect &&
-        typeof initialValue === "string"
+        typeof initialValue === 'string'
     ) {
-        result = initialValue? initialValue.split(",") : []
+        result = initialValue? initialValue.split(',') : [];
         if (
             !_.isEmpty(result) &&
             !_.isEmpty(item.dict) &&
-            typeof Object.values(item.dict)[0].value === "number"
+            typeof Object.values(item.dict)[0].value === 'number'
         ) {
-            result = result.map(value => parseInt(value))
+            result = result.map(value => parseInt(value));
         }
     }
 
     if (item.type === schemaFieldType.Select) {
         if (!item.dict || !Object.values(item.dict)[0] || initialValue instanceof Array) {
-            return result
+            return result;
         }
 
         if (
-            typeof Object.values(item.dict)[0].value === "number" &&
-            typeof initialValue === "string"
+            typeof Object.values(item.dict)[0].value === 'number' &&
+            typeof initialValue === 'string'
         ) {
-            result = parseInt(initialValue)
+            result = parseInt(initialValue);
         } else if (initialValue instanceof Array) {
-            result = initialValue
-        } else if (typeof Object.values(item.dict)[0].value === "string") {
-            result = initialValue.toString()
+            result = initialValue;
+        } else if (typeof Object.values(item.dict)[0].value === 'string') {
+            result = initialValue.toString();
         }
     }
 
-    return result
+    return result;
 }
 
 /**
@@ -582,22 +583,22 @@ function selectValueConvert(item, initialValue) {
  * @returns {*[]}
  */
 export function createFilter(form, inSchema, span, data = {}) {
-    let schema = clone(inSchema)
+    let schema = clone(inSchema);
     Object.keys(schema).forEach(key => {
         if (!schema[key]) {
-            delete schema[key]
-            return
+            delete schema[key];
+            return;
         }
 
         schema[key].dict &&
         Object.keys(schema[key].dict).forEach(dictItem => {
-            delete schema[key].dict[dictItem].default
-        })
-    })
+            delete schema[key].dict[dictItem].default;
+        });
+    });
 
     const filter = Object.keys(schema).map(key => {
         return (
-            <Col span={schema[key].span || span} key={"filter_" + key}>
+            <Col span={schema[key].span || span} key={'filter_' + key}>
                 {createInput.bind(null)(
                     {
                         ...schema[key],
@@ -608,19 +609,19 @@ export function createFilter(form, inSchema, span, data = {}) {
                             style: {
                                 ...((schema[key].props &&
                                     schema[key].props.style) ||
-                                    {})
-                            }
-                        }
+                                    {}),
+                            },
+                        },
                     },
                     data,
                     form,
-                    actions.add
+                    actions.add,
                 )}
             </Col>
-        )
-    })
+        );
+    });
 
-    return filter
+    return filter;
 }
 
 /**
@@ -637,19 +638,19 @@ export function createForm(
     otherTabs = {},
     extend = {},
     colNum = 1,
-    formProps
+    formProps,
 ) {
-    let result = null
+    let result = null;
 
     // create the from
     column.forEach(item => {
         if (!result) {
-            result = item.tabKey? {} : []
+            result = item.tabKey? {} : [];
         }
 
         // 修改隐藏 只读
         if (action === actions.edit && item.editHide && !data[item.dataIndex]) {
-            return
+            return;
         }
 
         let component = createInput.bind(this)(
@@ -658,16 +659,16 @@ export function createForm(
             form,
             action,
             { style },
-            colNum
-        )
+            colNum,
+        );
 
         if (result instanceof Array) {
-            result.push({ column: item, component })
+            result.push({ column: item, component });
         } else {
-            result[item.tabKey] = result[item.tabKey] || []
-            result[item.tabKey].push({ column: item, component })
+            result[item.tabKey] = result[item.tabKey] || [];
+            result[item.tabKey].push({ column: item, component });
         }
-    })
+    });
 
     if (result instanceof Array) {
         return (
@@ -678,7 +679,7 @@ export function createForm(
             >
                 {renderInputList.bind(this)(result, colNum)}
             </Form>
-        )
+        );
     } else {
         return (
             <Tabs tabPosition="left">
@@ -687,11 +688,11 @@ export function createForm(
                         {result[listKey].length < 10
                             ? renderInputList.bind(this)(
                                 result[listKey],
-                                colNum
+                                colNum,
                             )
                             : renderInputList.bind(this)(
                                 result[listKey],
-                                colNum
+                                colNum,
                             )}
                         {extend[listKey] || null}
                     </TabPane>
@@ -703,7 +704,7 @@ export function createForm(
                     </TabPane>
                 ))}
             </Tabs>
-        )
+        );
     }
 }
 
@@ -714,14 +715,14 @@ export function createForm(
  * @returns {Array}
  */
 function renderInputList(list, colNum) {
-    let itemList = []
+    let itemList = [];
 
-    let tempMum = 0
-    let tempList = []
+    let tempMum = 0;
+    let tempList = [];
     list.forEach((item, index) => {
-        tempMum += item.column.colNum || 1
-        tempList.push(item)
-        let push = false
+        tempMum += item.column.colNum || 1;
+        tempList.push(item);
+        let push = false;
 
         //  分组情况下 强制换行
         if (index === 0 && item.column.groupName) {
@@ -730,8 +731,8 @@ function renderInputList(list, colNum) {
                     <div className={styles.title}>
                         {list[index + 1].column.groupName}
                     </div>
-                </Fragment>
-            )
+                </Fragment>,
+            );
         }
 
         if (
@@ -739,7 +740,7 @@ function renderInputList(list, colNum) {
             list[index + 1].column.groupName &&
             item.column.groupName !== list[index + 1].column.groupName
         ) {
-            push = true
+            push = true;
         }
 
         if (push || tempMum >= colNum || index === list.length - 1) {
@@ -753,24 +754,24 @@ function renderInputList(list, colNum) {
                             {tempItem.component}
                         </Col>
                     ))}
-                </Row>
-            )
+                </Row>,
+            );
 
-            tempMum = 0
-            tempList = []
+            tempMum = 0;
+            tempList = [];
         }
 
         if (push) {
             itemList.push(
                 <Fragment>
-                    <Divider style={{ margin: "5px 2px 5px 2px" }}/>
+                    <Divider style={{ margin: '5px 2px 5px 2px' }}/>
                     <div className={styles.title}>
                         {list[index + 1].column.groupName}
                     </div>
-                </Fragment>
-            )
+                </Fragment>,
+            );
         }
-    })
+    });
 
-    return itemList
+    return itemList;
 }
