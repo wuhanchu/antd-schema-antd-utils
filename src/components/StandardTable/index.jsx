@@ -95,6 +95,7 @@ class StandardTable extends PureComponent {
             tableWidth = document.getElementById("table").offsetWidth
         }
 
+
         return (
             <div className={styles.standardTable}>
                 {selectedRows && selectedRows.length > 0 && (
@@ -145,7 +146,7 @@ class StandardTable extends PureComponent {
                     pagination={paginationProps}
                     onChange={this.handleTableChange}
                     {...otherProps}
-                    scroll={{ x: columns.length * 100 >tableWidth ? columns.length * 100: null }}
+                    scroll={{ x: columns.length * 150 >tableWidth ? columns.length * 150: null }}
                     size={"middle"}
                 />
             </div>
