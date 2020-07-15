@@ -1,7 +1,7 @@
 import StandardTable from "../StandardTable"
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Col, Divider, message, Popconfirm, Row } from "antd";
+import { Form } from "@ant-design/compatible"
+import "@ant-design/compatible/assets/index.css"
+import { Button, Card, Col, Divider, message, Popconfirm, Row } from "antd"
 import isEqual from "lodash.isequal"
 import React, { Fragment, PureComponent } from "react"
 import { createFilter, getListColumn } from "../../utils/component"
@@ -15,9 +15,9 @@ import { exportDataByTemplate } from "@/outter/fr-schema-antd-utils/src/utils/xl
 import * as _ from "lodash"
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
-const getValue = obj =>
+const getValue = (obj) =>
     Object.keys(obj)
-        .map(key => obj[key])
+        .map((key) => obj[key])
         .join(",")
 
 /**
@@ -43,7 +43,7 @@ class DataList extends PureComponent {
     state = {
         data: {
             list: [],
-            pagination: {}
+            pagination: {},
         },
         loading: false,
         listLoading: true,
@@ -52,7 +52,7 @@ class DataList extends PureComponent {
         expandForm: false,
         selectedRows: [],
         searchValues: {},
-        infoData: {}
+        infoData: {},
     }
     schema = {}
 
@@ -88,7 +88,7 @@ class DataList extends PureComponent {
         const tempState = {
             data: {
                 list: props.value || [],
-                pagination: {}
+                pagination: {},
             },
             listLoading: true,
             visibleModal: false,
@@ -96,7 +96,7 @@ class DataList extends PureComponent {
             expandForm: false,
             selectedRows: [],
             searchValues: {},
-            infoData: {}
+            infoData: {},
         }
 
         if (this._ismounted) {
@@ -121,7 +121,7 @@ class DataList extends PureComponent {
                 update: this.meta.authorityKey + "_patch",
                 delete: this.meta.authorityKey + "_delete",
                 export: this.meta.authorityKey + "_export",
-                show: this.meta.authorityKey + "_get_by_id"
+                show: this.meta.authorityKey + "_get_by_id",
             }
         }
     }
@@ -206,10 +206,10 @@ class DataList extends PureComponent {
                                 }
                                 noMatch={null}
                             >
-                                <Divider type="vertical"/>
+                                <Divider type="vertical" />
                                 <Popconfirm
                                     title="是否要删除此行？"
-                                    onConfirm={async e => {
+                                    onConfirm={async (e) => {
                                         await this.handleDelete(record)
                                         e.stopPropagation()
                                     }}
@@ -220,7 +220,7 @@ class DataList extends PureComponent {
                         )}
                         {this.renderOperateColumnExtend(record)}
                     </Fragment>
-                )
+                ),
             }
         )
     }
@@ -228,8 +228,7 @@ class DataList extends PureComponent {
     /**
      * 表格操作列，扩展方法
      */
-    renderOperateColumnExtend(record) {
-    }
+    renderOperateColumnExtend(record) {}
 
     componentWillReceiveProps(nextProps, nextContents) {
         if (nextProps.meta && nextProps.meta !== this.props.meta) {
@@ -240,7 +239,7 @@ class DataList extends PureComponent {
             this.setState(
                 {
                     pagination: null,
-                    searchValues: {}
+                    searchValues: {},
                 },
                 () => {
                     this.refreshList()
@@ -264,9 +263,9 @@ class DataList extends PureComponent {
                         decorateList(
                             this.state.data && this.state.data.list,
                             this.schema
-                        ) || []
+                        ) || [],
                 },
-                listLoading: false
+                listLoading: false,
             })
             return
         }
@@ -280,9 +279,9 @@ class DataList extends PureComponent {
                 selectedRows: [],
                 data: {
                     ...data,
-                    list
+                    list,
                 },
-                listLoading: false
+                listLoading: false,
             })
         })
     }
@@ -309,7 +308,7 @@ class DataList extends PureComponent {
             ...(queryArgs || {}),
             ...searchParams,
             ...(this.state.pagination || {}),
-            ...tempArgs
+            ...tempArgs,
         }
 
         let data = await this.service.get(params)
@@ -322,9 +321,13 @@ class DataList extends PureComponent {
      */
     getSearchParam() {
         let searchParams = {}
-        this.state.searchValues && Object.keys(this.state.searchValues).forEach(key => {
-            !_.isNil(this.state.searchValues[key]) && (searchParams[key] = (this.schema[key] && this.schema[key].searchPrefix || "") + this.state.searchValues[key])
-        })
+        this.state.searchValues &&
+            Object.keys(this.state.searchValues).forEach((key) => {
+                !_.isNil(this.state.searchValues[key]) &&
+                    (searchParams[key] =
+                        ((this.schema[key] && this.schema[key].searchPrefix) ||
+                            "") + this.state.searchValues[key])
+            })
         return searchParams
     }
 
@@ -349,7 +352,7 @@ class DataList extends PureComponent {
 
         if (sorter.field) {
             params.order = `${sorter.field.replace("_remark", "")}${
-                sorter.order == "ascend"? ".asc" : ".desc"
+                sorter.order == "ascend" ? ".asc" : ".desc"
             }`
         }
 
@@ -357,17 +360,17 @@ class DataList extends PureComponent {
             {
                 pagination: {
                     currentPage: pagination.current,
-                    pageSize: pagination.pageSize
+                    pageSize: pagination.pageSize,
                 },
-                searchValues: params
+                searchValues: params,
             },
             () => this.refreshList()
         )
     }
 
-    handleSelectRows = rows => {
+    handleSelectRows = (rows) => {
         this.setState({
-            selectedRows: rows
+            selectedRows: rows,
         })
     }
 
@@ -378,7 +381,7 @@ class DataList extends PureComponent {
         this.setState(
             {
                 pagination: null,
-                searchValues: { order }
+                searchValues: { order },
             },
             () => {
                 this.refreshList()
@@ -390,7 +393,7 @@ class DataList extends PureComponent {
      * 处理搜索触发事件
      * @param e
      */
-    handleSearch = e => {
+    handleSearch = (e) => {
         e.preventDefault()
 
         const { form } = this.props
@@ -401,16 +404,16 @@ class DataList extends PureComponent {
             const values = {
                 ...allValues,
                 updatedAt:
-                    fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf()
+                    fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
             }
 
             this.setState({
-                searchValues: values
+                searchValues: values,
             })
 
             //  更新列表
             const searchValues = { ...this.state.searchValues }
-            Object.keys(values).forEach(key => {
+            Object.keys(values).forEach((key) => {
                 if (!values[key]) {
                     return
                 }
@@ -421,7 +424,7 @@ class DataList extends PureComponent {
             this.setState(
                 {
                     pagination: null,
-                    searchValues
+                    searchValues,
                 },
                 async () => {
                     this.refreshList()
@@ -440,7 +443,7 @@ class DataList extends PureComponent {
         this.setState({
             visibleModal: !!flag,
             infoData: record,
-            action
+            action,
         })
     }
 
@@ -458,7 +461,7 @@ class DataList extends PureComponent {
             // 修改当前数据
             this.state.data.list.push(decorateItem(data, this.schema))
             this.setState({
-                data: this.state.data
+                data: this.state.data,
             })
         }
 
@@ -487,19 +490,19 @@ class DataList extends PureComponent {
         const idKey = getPrimaryKey(this.schema)
 
         this.state.data &&
-        this.state.data.list.some((item, index) => {
-            if (data[idKey] == item[idKey]) {
-                this.state.data.list[index] = decorateItem(
-                    data,
-                    this.schema
-                )
-                return true
-            }
-        })
+            this.state.data.list.some((item, index) => {
+                if (data[idKey] == item[idKey]) {
+                    this.state.data.list[index] = decorateItem(
+                        data,
+                        this.schema
+                    )
+                    return true
+                }
+            })
 
         //
         this.setState({
-            data: this.state.data
+            data: this.state.data,
         })
         this.refreshList()
         message.success("修改成功")
@@ -517,7 +520,7 @@ class DataList extends PureComponent {
      * @param data
      * @returns {Promise<void>}
      */
-    handleDelete = async data => {
+    handleDelete = async (data) => {
         // 更新
         let response
         if (!this.props.offline) {
@@ -535,7 +538,7 @@ class DataList extends PureComponent {
             }
         })
         this.setState({
-            data: this.state.data
+            data: this.state.data,
         })
         this.refreshList()
         message.success(showMessage)
@@ -549,10 +552,10 @@ class DataList extends PureComponent {
     /**
      * multi delete data
      */
-    handleDeleteMulti = async recordList => {
+    handleDeleteMulti = async (recordList) => {
         // change current data
         const idKey = getPrimaryKey(this.schema)
-        const valueList = recordList.map(record => record[idKey])
+        const valueList = recordList.map((record) => record[idKey])
 
         this.state.data.list.forEach((item, index) => {
             if (valueList.indexOf(item[idKey]) >= 0) {
@@ -560,7 +563,7 @@ class DataList extends PureComponent {
             }
         })
         this.setState({
-            data: this.state.data
+            data: this.state.data,
         })
 
         // invoke remote service
@@ -645,7 +648,7 @@ class DataList extends PureComponent {
                                         let data = this.state.data.list
                                         if (this.props.exportMore) {
                                             let data = await this.requestList({
-                                                pageSize: 1000000
+                                                pageSize: 1000000,
                                             })
                                             data = decorateList(
                                                 data.list,
@@ -680,8 +683,7 @@ class DataList extends PureComponent {
         )
     }
 
-    downloadImportTemplate() {
-    }
+    downloadImportTemplate() {}
 
     /**
      * 渲染操作栏
@@ -701,8 +703,8 @@ class DataList extends PureComponent {
                     <Col>
                         {this.renderOperationButtons()}
                         {showSelect &&
-                        selectedRows.length > 0 &&
-                        this.renderOperationMulit()}
+                            selectedRows.length > 0 &&
+                            this.renderOperationMulit()}
                     </Col>
                     <Col>{this.renderOperationExtend()}</Col>
                 </Row>
@@ -718,7 +720,7 @@ class DataList extends PureComponent {
             <span>
                 <Popconfirm
                     title="是否要删除选中的数据？"
-                    onConfirm={e => {
+                    onConfirm={(e) => {
                         const { dispatch } = this.props
                         const { selectedRows } = this.state
                         this.handleDeleteMulti(selectedRows)
@@ -733,14 +735,12 @@ class DataList extends PureComponent {
     /**
      * 操作栏扩展
      */
-    renderOperationExtend() {
-    }
+    renderOperationExtend() {}
 
     /**
      * 列表扩展
      */
-    renderExtend() {
-    }
+    renderExtend() {}
 
     /**
      * 渲染表格
@@ -759,6 +759,10 @@ class DataList extends PureComponent {
             otherProps.rowSelection = null
         }
 
+        if (scroll) {
+            otherProps.scroll = scroll
+        }
+
         if (mini) {
             otherProps.pagination = false
         }
@@ -773,7 +777,6 @@ class DataList extends PureComponent {
                 loading={!data || loading || listLoading}
                 data={data}
                 columns={columns}
-                scroll={scroll}
                 size={"small"}
                 onSelectRow={this.handleSelectRows}
                 onChange={this.handleStandardTableChange}
@@ -799,7 +802,7 @@ class DataList extends PureComponent {
         const updateMethods = {
             handleVisibleModal: this.handleVisibleModal.bind(this),
             handleUpdate: this.handleUpdate.bind(this),
-            handleAdd: this.handleAdd.bind(this)
+            handleAdd: this.handleAdd.bind(this),
         }
 
         return (
@@ -864,15 +867,14 @@ class DataList extends PureComponent {
         )
     }
 
-    renderSearchBar() {
-    }
+    renderSearchBar() {}
 
     render() {
         const { visibleModal, visibleImport } = this.state
         let {
             renderOperationBar,
             renderSearchBar,
-            renderOperateColumn
+            renderOperateColumn,
         } = this.props
 
         // 操作栏
@@ -891,23 +893,25 @@ class DataList extends PureComponent {
             searchBar = this.renderSearchBar && this.renderSearchBar()
         }
 
-        return <Fragment>
-            <Card bordered={false} style={{ width: "100%" }}>
-                <div className={styles.tableListForm}>{searchBar}</div>
-                <div className={styles.tableList}>
-                    {this.renderSearchForm && (
-                        <div className={styles.tableListForm}>
-                            {this.renderSearchForm()}
-                        </div>
-                    )}
-                    {operationBar}
-                    {this.renderList()}
-                </div>
-            </Card>
-            {visibleModal && this.renderInfoModal()}
-            {visibleImport && this.renderImportModal()}
-            {this.renderExtend && this.renderExtend()}
-        </Fragment>
+        return (
+            <Fragment>
+                <Card bordered={false} style={{ width: "100%" }}>
+                    <div className={styles.tableListForm}>{searchBar}</div>
+                    <div className={styles.tableList}>
+                        {this.renderSearchForm && (
+                            <div className={styles.tableListForm}>
+                                {this.renderSearchForm()}
+                            </div>
+                        )}
+                        {operationBar}
+                        {this.renderList()}
+                    </div>
+                </Card>
+                {visibleModal && this.renderInfoModal()}
+                {visibleImport && this.renderImportModal()}
+                {this.renderExtend && this.renderExtend()}
+            </Fragment>
+        )
     }
 }
 

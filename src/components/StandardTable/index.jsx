@@ -145,9 +145,9 @@ class StandardTable extends PureComponent {
                     columns={columns}
                     pagination={paginationProps}
                     onChange={this.handleTableChange}
-                    {...otherProps}
                     scroll={{ x: columns.length * 150 >tableWidth ? columns.length * 150: null }}
                     size={"middle"}
+                    {...otherProps}
                 />
             </div>
         )
