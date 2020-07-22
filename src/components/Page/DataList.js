@@ -323,10 +323,16 @@ class DataList extends PureComponent {
         let searchParams = {}
         this.state.searchValues &&
             Object.keys(this.state.searchValues).forEach((key) => {
-                !_.isNil(this.state.searchValues[key]) &&
-                    (searchParams[key] =
-                        ((this.schema[key] && this.schema[key].searchPrefix) ||
-                            "") + this.state.searchValues[key])
+                if (!_.isNil(this.state.searchValues[key])) {
+                    const prefix =
+                        (this.schema[key] && this.schema[key].searchPrefix) ||
+                        ""
+                    let value = this.state.searchValues[key]
+                    if (prefix == "like") {
+                        value = "*" + value + "*"
+                    }
+                    searchParams[key] = (prefix ? prefix + "." : "") + value
+                }
             })
         return searchParams
     }
