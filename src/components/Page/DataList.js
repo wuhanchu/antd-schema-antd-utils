@@ -32,23 +32,12 @@ const SearchForm = styled(Form)`
 `
 
 /**
+ * 基于 schema 对象自动生成列表组件
+ * @class
+ * @extends React.PureComponent
+ * @author wuhanchu
+ * @tutorial destroy Destroying a Widget
  *
- * offline: 是否开启离线模式
- * meta:{
- *   operateWidth: the operate column width
- *   scroll: table whether can scroll
- *   selectedRows
- *   showSelect
- *   resource: schema resource name ，
- *   schema: schema name,
- *   service: remote service,
- *   title: page title,
- *   infoProps: infoForm propsrefreshMeta
- *   handleChangeCallback: data change call back
- *   queryArgs: fixed query args
- *   allowExport
- *   allowImport
- * }
  */
 class DataList extends PureComponent {
     state = {
@@ -67,6 +56,24 @@ class DataList extends PureComponent {
     }
     schema = {}
 
+    /**
+     * @constructs
+     * @param {object} props 属性
+     * @param {string} meta 类型元数据
+     * operateWidth: 操作宽度
+     * scroll: table whether can scroll
+     * selectedRows
+     * showSelect
+     * resource: schema resource name ，
+     * schema: schema name,
+     * service: remote service,
+     * title: page title,**adf**
+     * infoProps: infoForm propsrefreshMeta
+     * handleChangeCallback: data change call back
+     * queryArgs: fixed query args
+     * allowExport
+     * offline: 是否开启离线模式
+     */
     constructor(props, meta) {
         super(props)
         this.init(props, meta)
@@ -76,7 +83,7 @@ class DataList extends PureComponent {
      * create search filter
      * @param params
      */
-    createFilters(inSchema, span = 6) {
+    createFilters(inSchema, span = 4) {
         return createFilter(this.props.form, inSchema, span)
     }
 
@@ -176,7 +183,6 @@ class DataList extends PureComponent {
      * 表格操作列
      * @returns {{width: string, fixed: (*|string), title: string, render: (function(*, *=): *)}}
      */
-
     renderOperateColumn(props = {}) {
         const { scroll } = this.meta
         const { showEdit = true, showDelete = true } = props
@@ -622,7 +628,7 @@ class DataList extends PureComponent {
                     authority={this.meta.authority && this.meta.authority.add}
                     noMatch={null}
                 >
-                    {!this.props.readOnly && (
+                    {(!this.props.readOnly && !this.meta.addHide) && (
                         <Button
                             type="primary"
                             onClick={() =>
@@ -891,6 +897,9 @@ class DataList extends PureComponent {
         )
     }
 
+    /**
+     * 搜索的实现
+     */
     renderSearchBar() {
     }
 
