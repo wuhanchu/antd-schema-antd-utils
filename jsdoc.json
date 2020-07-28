@@ -1,0 +1,25 @@
+{
+    "source": {
+        "include": [
+            "src/"
+        ],
+        "exclude": [
+            "src/libs"
+        ]
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "markdown": {
+        "hardwrap": true,
+        "tags": [
+            "param"
+        ]
+    },
+    "opts": {
+        "encoding": "utf8",
+        "destination": "./doc/",
+        "recurse": true,
+        "verbose": false
+    }
+}

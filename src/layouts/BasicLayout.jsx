@@ -5,8 +5,8 @@
  */
 import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';
-import { Link, useIntl, connect } from 'umi';
-import { Result, Button } from 'antd';
+import { connect, Link, useIntl } from 'umi';
+import { Button, Result } from 'antd';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { getAuthorityFromRouter } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
@@ -45,6 +45,7 @@ const BasicLayout = props => {
         dispatch,
         children,
         settings,
+        init,
         location = {
             pathname: '/',
         },
@@ -55,9 +56,9 @@ const BasicLayout = props => {
 
     useEffect(() => {
         if (dispatch) {
-            // dispatch({
-            //     type: 'user/fetchCurrent',
-            // });
+            dispatch({
+                type: 'global/init',
+            });
         }
     }, []);
     /**
@@ -73,12 +74,8 @@ const BasicLayout = props => {
         }
     }; // get children authority
 
-    const authorized = getAuthorityFromRouter(props.route.routes, location.pathname || '/') || {
-        authority: undefined,
-    };
     const { formatMessage } = useIntl();
-    console.debug("props",props)
-    console.debug("settings",settings)
+
     return (
         <ProLayout
             logo={logo}
@@ -105,7 +102,7 @@ const BasicLayout = props => {
                     }),
                 },
                 ...routers,
-            ]}te
+            ]} te
 
             itemRender={(route, params, routes, paths) => {
                 const first = routes.indexOf(route) === 0;
@@ -120,17 +117,15 @@ const BasicLayout = props => {
             rightContentRender={() => <RightContent/>}
             {...props}
             {...settings}
-            loading={false}
-
+            loading={!init}
         >
-            <Authorized authority={authorized.authority} noMatch={noMatch}>
-                {children}
-            </Authorized>
+            {children}
         </ProLayout>
     );
 };
 
 export default connect(({ global, settings }) => ({
     collapsed: global.collapsed,
+    init: global.init,
     settings,
 }))(BasicLayout);
