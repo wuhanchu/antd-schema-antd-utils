@@ -1,8 +1,20 @@
 import React, { Fragment } from 'react';
-import { CloudUploadOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Avatar, Button, Col, Divider, Mentions, Row, Select, Tabs, Tooltip, Transfer, Upload, } from 'antd';
+import {
+    Avatar,
+    Button,
+    Col,
+    Divider,
+    Mentions,
+    Row,
+    Select,
+    Tabs,
+    Tooltip,
+    Transfer,
+    Upload,
+} from 'antd';
 
 import dictComponents from './componentDict';
 import frSchema from '@/outter/fr-schema/src';
@@ -150,7 +162,7 @@ export function createInput(
         disabled:
             action === actions.show ||
             (action === actions.edit && item.readOnly),
-        onChange: function (event) {
+        onChange: function(event) {
             const value =
                 event && event.currentTarget? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
@@ -330,7 +342,7 @@ export function createComponent(
             // options
             item.dict &&
             Object.values(item.dict).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     //check the dict Whether it matches
                     if (
                         dictItem.condition &&
@@ -342,7 +354,7 @@ export function createComponent(
                             }
                         } else if (
                             Object.keys(dictItem.condition).some(
-                                function (key) {
+                                function(key) {
                                     return (
                                         !this ||
                                         !this.state ||
@@ -407,7 +419,7 @@ export function createComponent(
             // options
             item.options &&
             Object.values(item.options).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     // add to options
                     return options.push(
                         <MentionsOption
@@ -439,8 +451,7 @@ export function createComponent(
                     {...props}
                 >
                     <Button>
-
-                        <CloudUploadOutlined/> 选择文件
+                        <UploadOutlined/> 选择文件
                     </Button>
                 </Upload>
             );
