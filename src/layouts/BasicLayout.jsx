@@ -8,11 +8,12 @@ import React, { useEffect } from 'react';
 import { connect, Link, useIntl } from 'umi';
 import { Button, Result } from 'antd';
 import RightContent from '@/components/GlobalHeader/RightContent';
-import { getAuthorityFromRouter } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
-import config from "../../../../../config/settting/standard"
+
 import Authorized from "../components/Authorized/Authorized";
 
+
+const config = SETTING
 const noMatch = (
     <Result
         status={403}

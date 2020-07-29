@@ -5,7 +5,8 @@ import React from 'react';
 import SelectLang from '@/components/SelectLang';
 import logo from '@/assets/logo.svg';
 import styles from './UserLayout.less';
-import config from "../../../../../config/settting/standard"
+
+const config = SETTING
 
 const UserLayout = props => {
     const {
