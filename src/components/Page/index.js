@@ -1,6 +1,0 @@
-export { default as ConfForm } from "./ConfForm"
-export { default as DataList } from "./DataList"
-export { default as ExtendModal } from "./ExtendModal"
-export { default as InfoForm } from "./InfoForm"
-export { default as InfoModal } from "./InfoModal"
-export { default as ListPage } from "./ListPage"
