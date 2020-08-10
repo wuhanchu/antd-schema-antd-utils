@@ -21,9 +21,9 @@ const getValue = (obj) =>
         .map((key) => obj[key])
         .join(",")
 
-const SearchForm = styled(Form)`
+export const SearchForm = styled(Form)`
     & .ant-row {
-        margin-bottom: 0px;
+        margin-bottom: 4px;
     }
 
     & button {
