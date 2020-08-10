@@ -1,19 +1,19 @@
-import StandardTable from "../StandardTable"
-import { Form } from "@ant-design/compatible"
-import "@ant-design/compatible/assets/index.css"
-import { Button, Card, Col, Divider, message, Popconfirm, Row } from "antd"
-import isEqual from "lodash.isequal"
-import React, { Fragment, PureComponent } from "react"
-import { createFilter, getListColumn } from "../../utils/component"
-import Authorized from "../Authorized/Authorized"
-import styles from "./DataList.less"
-import InfoModal from "./InfoModal"
-import frSchema from "@/outter/fr-schema/src"
-import { exportData } from "../../utils/xlsx"
-import ImportModal from "@/outter/fr-schema-antd-utils/src/components/modal/ImportModal"
-import { exportDataByTemplate } from "@/outter/fr-schema-antd-utils/src/utils/xlsx"
-import * as _ from "lodash"
-import styled from "styled-components"
+import StandardTable from '../StandardTable';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Col, Divider, message, Popconfirm, Row } from 'antd';
+import isEqual from 'lodash.isequal';
+import React, { Fragment, PureComponent } from 'react';
+import { createFilter, getListColumn } from '../../utils/component';
+import Authorized from '../Authorized/Authorized';
+import styles from './DataList.less';
+import InfoModal from './InfoModal';
+import frSchema from '@/outter/fr-schema/src';
+import { exportData } from '../../utils/xlsx';
+import ImportModal from '@/outter/fr-schema-antd-utils/src/components/modal/ImportModal';
+import { exportDataByTemplate } from '@/outter/fr-schema-antd-utils/src/utils/xlsx';
+import * as _ from 'lodash';
+import styled from 'styled-components';
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
 const getValue = (obj) =>
@@ -27,7 +27,7 @@ const SearchForm = styled(Form)`
     }
 
     & button {
-      margin-top: 4px;
+        margin-top: 4px;
     }
 `
 
@@ -223,7 +223,7 @@ class DataList extends PureComponent {
                                 }
                                 noMatch={null}
                             >
-                                <Divider type="vertical"/>
+                                <Divider type="vertical" />
                                 <Popconfirm
                                     title="是否要删除此行？"
                                     onConfirm={async (e) => {
@@ -245,8 +245,7 @@ class DataList extends PureComponent {
     /**
      * 表格操作列，扩展方法
      */
-    renderOperateColumnExtend(record) {
-    }
+    renderOperateColumnExtend(record) {}
 
     componentWillReceiveProps(nextProps, nextContents) {
         if (nextProps.meta && nextProps.meta !== this.props.meta) {
@@ -340,18 +339,18 @@ class DataList extends PureComponent {
     getSearchParam() {
         let searchParams = {}
         this.state.searchValues &&
-        Object.keys(this.state.searchValues).forEach((key) => {
-            if (!_.isNil(this.state.searchValues[key])) {
-                const prefix =
-                    (this.schema[key] && this.schema[key].searchPrefix) ||
-                    ""
-                let value = this.state.searchValues[key]
-                if (prefix == "like") {
-                    value = "*" + value + "*"
+            Object.keys(this.state.searchValues).forEach((key) => {
+                if (!_.isNil(this.state.searchValues[key])) {
+                    const prefix =
+                        (this.schema[key] && this.schema[key].searchPrefix) ||
+                        ""
+                    let value = this.state.searchValues[key]
+                    if (prefix == "like") {
+                        value = "*" + value + "*"
+                    }
+                    searchParams[key] = (prefix ? prefix + "." : "") + value
                 }
-                searchParams[key] = (prefix? prefix + "." : "") + value
-            }
-        })
+            })
         return searchParams
     }
 
@@ -376,7 +375,7 @@ class DataList extends PureComponent {
 
         if (sorter.field) {
             params.order = `${sorter.field.replace("_remark", "")}${
-                sorter.order == "ascend"? ".asc" : ".desc"
+                sorter.order == "ascend" ? ".asc" : ".desc"
             }`
         }
 
@@ -398,13 +397,16 @@ class DataList extends PureComponent {
         })
     }
 
+    /**
+     * 充值查询
+     */
     handleFormReset = () => {
         const { form } = this.props
         const { order } = this.props
         form.resetFields()
         this.setState(
             {
-                pagination: null,
+                pagination: { ...this.state.pagination, currentPage: 1 },
                 searchValues: { order },
             },
             () => {
@@ -447,7 +449,7 @@ class DataList extends PureComponent {
 
             this.setState(
                 {
-                    pagination: null,
+                    pagination: { ...this.state.pagination, currentPage: 1 },
                     searchValues,
                 },
                 async () => {
@@ -514,15 +516,15 @@ class DataList extends PureComponent {
         const idKey = getPrimaryKey(this.schema)
 
         this.state.data &&
-        this.state.data.list.some((item, index) => {
-            if (data[idKey] == item[idKey]) {
-                this.state.data.list[index] = decorateItem(
-                    data,
-                    this.schema
-                )
-                return true
-            }
-        })
+            this.state.data.list.some((item, index) => {
+                if (data[idKey] == item[idKey]) {
+                    this.state.data.list[index] = decorateItem(
+                        data,
+                        this.schema
+                    )
+                    return true
+                }
+            })
 
         //
         this.setState({
@@ -628,7 +630,7 @@ class DataList extends PureComponent {
                     authority={this.meta.authority && this.meta.authority.add}
                     noMatch={null}
                 >
-                    {(!this.props.readOnly && !this.meta.addHide) && (
+                    {!this.props.readOnly && !this.meta.addHide && (
                         <Button
                             type="primary"
                             onClick={() =>
@@ -707,8 +709,7 @@ class DataList extends PureComponent {
         )
     }
 
-    downloadImportTemplate() {
-    }
+    downloadImportTemplate() {}
 
     /**
      * 渲染操作栏
@@ -728,8 +729,8 @@ class DataList extends PureComponent {
                     <Col>
                         {this.renderOperationButtons()}
                         {showSelect &&
-                        selectedRows.length > 0 &&
-                        this.renderOperationMulit()}
+                            selectedRows.length > 0 &&
+                            this.renderOperationMulit()}
                     </Col>
                     <Col>{this.renderOperationExtend()}</Col>
                 </Row>
@@ -760,14 +761,12 @@ class DataList extends PureComponent {
     /**
      * 操作栏扩展
      */
-    renderOperationExtend() {
-    }
+    renderOperationExtend() {}
 
     /**
      * 列表扩展
      */
-    renderExtend() {
-    }
+    renderExtend() {}
 
     /**
      * 渲染表格
@@ -900,8 +899,7 @@ class DataList extends PureComponent {
     /**
      * 搜索的实现
      */
-    renderSearchBar() {
-    }
+    renderSearchBar() {}
 
     render() {
         const { visibleModal, visibleImport } = this.state
