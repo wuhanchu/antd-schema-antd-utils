@@ -3,7 +3,7 @@ import { PageLoading } from '@ant-design/pro-layout';
 import { Redirect, connect } from 'umi';
 import { stringify } from 'querystring';
 
-class SecurityLayout extends React.Component {
+export class SecurityLayout extends React.Component {
     state = {
         isReady: false,
     };
