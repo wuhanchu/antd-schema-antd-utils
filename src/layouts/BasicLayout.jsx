@@ -3,15 +3,14 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
-import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
-import React, { useEffect } from 'react';
-import { connect, Link, useIntl } from 'umi';
-import { Button, Result } from 'antd';
-import RightContent from '@/components/GlobalHeader/RightContent';
-import logo from '@/assets/logo.svg';
+import ProLayout, { DefaultFooter } from "@ant-design/pro-layout"
+import React, { useEffect } from "react"
+import { connect, Link, useIntl } from "umi"
+import { Button, Result } from "antd"
+import RightContent from "@/components/GlobalHeader/RightContent"
+import logo from "@/assets/logo.svg"
 
-import Authorized from "../components/Authorized/Authorized";
-
+import Authorized from "../components/Authorized/Authorized"
 
 const config = SETTING
 const noMatch = (
@@ -25,32 +24,36 @@ const noMatch = (
             </Button>
         }
     />
-);
+)
 
 /**
  * use Authorized check all menu item
  */
-const menuDataRender = menuList =>
-    menuList.map(item => {
-        const localItem = { ...item, children: item.children? menuDataRender(item.children) : [] };
-        return Authorized.check(item.authority, localItem, null);
-    });
+const menuDataRender = (menuList) =>
+    menuList.map((item) => {
+        const localItem = {
+            ...item,
+            children: item.children ? menuDataRender(item.children) : [],
+        }
+        return Authorized.check(item.authority, localItem, null)
+    })
 
 const defaultFooterDom = (
-    <DefaultFooter copyright={config.copyright || ""} links={[]}/>
+    <DefaultFooter copyright={config.copyright || ""} links={[]} />
+)
 
-);
-
-const BasicLayout = props => {
+const BasicLayout = (props) => {
     const {
         dispatch,
         children,
         settings,
         init,
+        initCallback,
+
         location = {
-            pathname: '/',
+            pathname: "/",
         },
-    } = props;
+    } = props
     /**
      * constructor
      */
@@ -58,24 +61,29 @@ const BasicLayout = props => {
     useEffect(() => {
         if (dispatch) {
             dispatch({
-                type: 'global/init',
-            });
+                type: "global/init",
+            })
         }
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        initCallback && initCallback()
+    }, [init])
+
     /**
      * init variables
      */
 
-    const handleMenuCollapse = payload => {
+    const handleMenuCollapse = (payload) => {
         if (dispatch) {
             dispatch({
-                type: 'global/changeLayoutCollapsed',
+                type: "global/changeLayoutCollapsed",
                 payload,
-            });
+            })
         }
-    }; // get children authority
+    } // get children authority
 
-    const { formatMessage } = useIntl();
+    const { formatMessage } = useIntl()
 
     return (
         <ProLayout
@@ -89,44 +97,48 @@ const BasicLayout = props => {
             )}
             onCollapse={handleMenuCollapse}
             menuItemRender={(menuItemProps, defaultDom) => {
-                if (menuItemProps.isUrl || menuItemProps.children || !menuItemProps.path) {
-                    return defaultDom;
+                if (
+                    menuItemProps.isUrl ||
+                    menuItemProps.children ||
+                    !menuItemProps.path
+                ) {
+                    return defaultDom
                 }
 
-                return <Link to={menuItemProps.path}>{defaultDom}</Link>;
+                return <Link to={menuItemProps.path}>{defaultDom}</Link>
             }}
             breadcrumbRender={(routers = []) => [
                 {
-                    path: '/',
+                    path: "/",
                     breadcrumbName: formatMessage({
-                        id: 'menu.home',
+                        id: "menu.home",
                     }),
                 },
                 ...routers,
-            ]} te
-
+            ]}
+            te
             itemRender={(route, params, routes, paths) => {
-                const first = routes.indexOf(route) === 0;
-                return first? (
-                    <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
+                const first = routes.indexOf(route) === 0
+                return first ? (
+                    <Link to={paths.join("/")}>{route.breadcrumbName}</Link>
                 ) : (
                     <span>{route.breadcrumbName}</span>
-                );
+                )
             }}
             footerRender={() => defaultFooterDom}
             menuDataRender={menuDataRender}
-            rightContentRender={() => <RightContent/>}
+            rightContentRender={() => <RightContent />}
             {...props}
             {...settings}
             loading={!init}
         >
             {children}
         </ProLayout>
-    );
-};
+    )
+}
 
 export default connect(({ global, settings }) => ({
     collapsed: global.collapsed,
     init: global.init,
     settings,
-}))(BasicLayout);
+}))(BasicLayout)
