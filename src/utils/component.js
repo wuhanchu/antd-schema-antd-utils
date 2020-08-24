@@ -162,7 +162,7 @@ export function createInput(
         disabled:
             action === actions.show ||
             (action === actions.edit && item.readOnly),
-        onChange: function(event) {
+        onChange: function (event) {
             const value =
                 event && event.currentTarget? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
@@ -256,25 +256,21 @@ export function createInput(
     !this.state ||
     !item.infoShowFunc ||
     item.infoShowFunc(this.state.data)? (
-        <FormItem
-            key={item.dataIndex}
-            name={item.dataIndex}
-            label={
-                item.title + (item.unit? '(' + item.unit + ')' : '')
-            }
-            rules={decoratorProps.rules}
-            extra={item.extra}
-            {...itemProps}
-            {...item.itemProps}
-        >
-            {component}
-            {/*{form*/}
-            {/*    ? form.getFieldDecorator(*/}
-            {/*        item.dataIndex,*/}
-            {/*        decoratorProps,*/}
-            {/*    )(component)*/}
-            {/*    : component}*/}
-        </FormItem>
+        <Tooltip placement="top" title={item.tip}>
+            <FormItem
+                key={item.dataIndex}
+                name={item.dataIndex}
+                label={
+                    item.title + (item.unit? '(' + item.unit + ')' : '')
+                }
+                rules={decoratorProps.rules}
+                extra={item.extra}
+                {...itemProps}
+                {...item.itemProps}
+            >
+                {component}
+            </FormItem>
+        </Tooltip>
     ) : null;
 }
 
@@ -340,7 +336,7 @@ export function createComponent(
             // options
             item.dict &&
             Object.values(item.dict).forEach(
-                function(dictItem) {
+                function (dictItem) {
                     //check the dict Whether it matches
                     if (
                         dictItem.condition &&
@@ -352,7 +348,7 @@ export function createComponent(
                             }
                         } else if (
                             Object.keys(dictItem.condition).some(
-                                function(key) {
+                                function (key) {
                                     return (
                                         !this ||
                                         !this.state ||
@@ -417,7 +413,7 @@ export function createComponent(
             // options
             item.options &&
             Object.values(item.options).forEach(
-                function(dictItem) {
+                function (dictItem) {
                     // add to options
                     return options.push(
                         <MentionsOption
