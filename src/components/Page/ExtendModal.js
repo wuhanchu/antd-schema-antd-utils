@@ -1,13 +1,12 @@
 import React, { PureComponent } from "react"
-import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Modal, Tabs } from "antd";
 import { createForm, createInput } from "../../utils/component"
 
 const TabPane = Tabs.TabPane
 
-@Form.create()
 class ExtendForm extends PureComponent {
+    formRef = React.createRef();
     constructor(props) {
         super(props)
         this.state = {
@@ -22,36 +21,37 @@ class ExtendForm extends PureComponent {
 
     renderContent = data => {
         const { column } = this.state
-        const { form } = this.props
-        return createForm.bind(this)(column, data, form)
+        return createForm.bind(this)(column, data, this.formRef)
     }
 
     onSave = () => {
-        const { form, onOk } = this.props
+        const { onOk } = this.props
         const { data } = this.props
 
-        form.validateFields((err, fieldsValue) => {
-            let param = this.state.data? { ...this.state.data } : {}
-            Object.keys(fieldsValue).forEach(key => {
-                param[key] =
-                    fieldsValue[key] instanceof Array
-                        ? fieldsValue[key].join(",")
-                        : fieldsValue[key]
-            })
-
-            if (err) return
-
-            this.setState({ loading: true }, async () => {
-                try {
-                    const result = await onOk(fieldsValue, data)
-                    if (result !== false) {
-                        this.props.onCancel()
+        this.formRef.current
+            .validateFields()
+            .then(async fieldsValue => {
+                let param = this.state.data? { ...this.state.data } : {}
+                Object.keys(fieldsValue).forEach(key => {
+                    param[key] =
+                        fieldsValue[key] instanceof Array
+                            ? fieldsValue[key].join(",")
+                            : fieldsValue[key]
+                })
+                this.setState({ loading: true }, async () => {
+                    try {
+                        const result = await onOk(fieldsValue, data)
+                        if (result !== false) {
+                            this.props.onCancel()
+                        }
+                    } finally {
+                        this.setState({ loading: false })
                     }
-                } finally {
-                    this.setState({ loading: false })
-                }
+                })
             })
-        })
+            .catch(err => {
+                console.log("err", err)
+            })
     }
 
     render() {

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
+// import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import {
     Avatar,
@@ -14,6 +14,7 @@ import {
     Tooltip,
     Transfer,
     Upload,
+    Form,
 } from 'antd';
 
 import dictComponents from './componentDict';
@@ -152,7 +153,6 @@ export function createInput(
     colNum = 1,
 ) {
     const type = item.type || 'Input';
-
     // component props
     let props = {
         form,
@@ -256,26 +256,25 @@ export function createInput(
     !this.state ||
     !item.infoShowFunc ||
     item.infoShowFunc(this.state.data)? (
-        <Tooltip placement="right" title={item.tip}>
-            <div>
-                <FormItem
-                    key={item.dataIndex}
-                    label={
-                        item.title + (item.unit? '(' + item.unit + ')' : '')
-                    }
-                    extra={item.extra}
-                    {...itemProps}
-                    {...item.itemProps}
-                >
-                    {form
-                        ? form.getFieldDecorator(
-                            item.dataIndex,
-                            decoratorProps,
-                        )(component)
-                        : component}
-                </FormItem>
-            </div>
-        </Tooltip>
+        <FormItem
+            key={item.dataIndex}
+            name={item.dataIndex}
+            label={
+                item.title + (item.unit? '(' + item.unit + ')' : '')
+            }
+            rules={decoratorProps.rules}
+            extra={item.extra}
+            {...itemProps}
+            {...item.itemProps}
+        >
+            {component}
+            {/*{form*/}
+            {/*    ? form.getFieldDecorator(*/}
+            {/*        item.dataIndex,*/}
+            {/*        decoratorProps,*/}
+            {/*    )(component)*/}
+            {/*    : component}*/}
+        </FormItem>
     ) : null;
 }
 
@@ -301,10 +300,9 @@ export function createComponent(
 
     let props = { ...item.props, ...extraProps };
 
-    if (data) {
-        props.value = data;
-    }
-
+    // if (data) {
+    //     props.value = data;
+    // }
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
@@ -596,7 +594,7 @@ export function createFilter(form, inSchema, span, data = {}) {
         });
     });
 
-    const filter = Object.keys(schema).map(key => {
+    let filter = Object.keys(schema).map(key => {
         return (
             <Col span={schema[key].span || span} key={'filter_' + key}>
                 {createInput.bind(null)(
@@ -673,6 +671,7 @@ export function createForm(
     if (result instanceof Array) {
         return (
             <Form
+                ref={form}
                 labelCol={globalStyle.form.labelCol}
                 wrapperCol={globalStyle.form.wrapperCol}
                 {...formProps}

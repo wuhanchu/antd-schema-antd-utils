@@ -1,15 +1,13 @@
-import React, { PureComponent } from "react"
-import { connect } from "dva"
-import { globalStyle } from "@/styles/global"
-
-import { Form } from '@ant-design/compatible';
+import React, {PureComponent} from "react"
+import {connect} from "dva"
+import {globalStyle} from "@/styles/global"
 import '@ant-design/compatible/assets/index.css';
 
-import { Button, message, Modal, Upload } from "antd";
+import {Button, message, Modal, Upload, Form} from "antd";
 import FileSaver from "file-saver"
 
 import XLSX from "xlsx"
-import { convertFormImport } from "@/outter/fr-schema/src/schema"
+import {convertFormImport} from "@/outter/fr-schema/src/schema"
 
 const FormItem = Form.Item
 
@@ -18,22 +16,21 @@ const FormItem = Form.Item
  * maxLength 检测数据长度，超过报错
  */
 
-@Form.create()
 class ImportModal extends PureComponent {
+    formRef = React.createRef();
     state = {
         data: {}
     }
 
     render() {
         const {
-            form,
             maxLength,
             importTemplateUrl,
             sliceNum = 2,
             errorKey,
             ...others
         } = this.props
-        const { data, file } = this.state
+        const {data, file} = this.state
 
         const uploadProps = {
             onRemove: file => {
@@ -47,13 +44,13 @@ class ImportModal extends PureComponent {
                 })
             },
             beforeUpload: file => {
-                this.setState({ beforeUploadLoading: true })
+                this.setState({beforeUploadLoading: true})
                 const reader = new FileReader()
                 reader.onload = (async evt => {
                     // parse excel
                     const schema = this.props.schema
                     const binary = evt.target.result
-                    const wb = XLSX.read(binary, { type: "binary" })
+                    const wb = XLSX.read(binary, {type: "binary"})
                     const sheetName = wb.SheetNames[0]
                     const ws = wb.Sheets[sheetName]
                     let data = XLSX.utils.sheet_to_json(ws, {
@@ -85,7 +82,7 @@ class ImportModal extends PureComponent {
                     } catch (e) {
                         message.error(e.message)
                     } finally {
-                        this.setState({ beforeUploadLoading: false })
+                        this.setState({beforeUploadLoading: false})
                     }
                 }).bind(this)
 
@@ -98,7 +95,7 @@ class ImportModal extends PureComponent {
 
         return (
             <Modal visible={true} {...others}>
-                <Form>
+                <Form ref={this.formRef}>
                     <FormItem
                         labelCol={globalStyle.form.labelCol}
                         wrapperCol={globalStyle.form.wrapperCol}
@@ -118,17 +115,16 @@ class ImportModal extends PureComponent {
                         wrapperCol={globalStyle.form.wrapperCol}
                         label={"上传文件"}
                         required={true}
+                        name="file"
                     >
-                        {form.getFieldDecorator("file", {})(
-                            <Upload
-                                fileList={this.state.fileList}
-                                {...uploadProps}
-                            >
-                                <Button loading={this.state.chuan}>
-                                    点击上传文件
-                                </Button>
-                            </Upload>
-                        )}
+                        <Upload
+                            fileList={this.state.fileList}
+                            {...uploadProps}
+                        >
+                            <Button loading={this.state.chuan}>
+                                点击上传文件
+                            </Button>
+                        </Upload>
                     </FormItem>
                 </Form>
             </Modal>

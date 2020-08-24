@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react"
-import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button } from "antd";
+import { Button,Form } from "antd";
 import InfoForm from "./InfoForm"
 import { connect } from "dva"
 
@@ -12,8 +11,8 @@ const FormItem = Form.Item
     user: user.currentUser,
     loading: loading.models.weixinMember
 }))
-@Form.create()
 class ConfForm extends PureComponent {
+    formRef = React.createRef();
     componentDidMount() {
         const { dispatch, user } = this.props
         dispatch({
@@ -21,11 +20,11 @@ class ConfForm extends PureComponent {
         })
     }
 
-    handleSubmit = e => {
-        const { dispatch, form, member, addon } = this.props
-        e.preventDefault()
-        form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
+    handleSubmit = filedValues => {
+        const { dispatch, member, addon } = this.props
+        this.formRef.current
+            .validateFields()
+            .then(async values => {
                 console.log("handleSubmit", values)
                 // const value = JSON.stringify(values);
                 member.addons[addon] = values
@@ -36,12 +35,14 @@ class ConfForm extends PureComponent {
                         addon_config: JSON.stringify(member.addons)
                     }
                 })
-            }
-        })
+            })
+            .catch(err => {
+                console.log("err", err)
+            })
     }
 
     render() {
-        const { member, addon, resource, form, loading } = this.props
+        const { member, addon, resource, loading } = this.props
         if (!member) {
             return null
         }
@@ -55,10 +56,10 @@ class ConfForm extends PureComponent {
         }
 
         return (
-            <Form onSubmit={this.handleSubmit} hideRequiredMark>
+            <Form onFinish={this.handleSubmit} hideRequiredMark ref={this.formRef}>
                 <InfoForm
                     values={data}
-                    form={form}
+                    form={this.formRef}
                     resource={resource || "weixinMember"}
                 />
                 <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>

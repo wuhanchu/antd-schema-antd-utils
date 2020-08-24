@@ -1,7 +1,6 @@
 import StandardTable from '../StandardTable';
-import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Col, Divider, message, Popconfirm, Row } from 'antd';
+import { Button, Card, Col, Divider, message, Popconfirm, Row, Form } from 'antd';
 import isEqual from 'lodash.isequal';
 import React, { Fragment, PureComponent } from 'react';
 import { createFilter, getListColumn } from '../../utils/component';
@@ -56,6 +55,8 @@ class DataList extends PureComponent {
     }
     schema = {}
 
+    formRef = React.createRef();
+
     /**
      * @constructs
      * @param {object} props 属性
@@ -84,7 +85,7 @@ class DataList extends PureComponent {
      * @param params
      */
     createFilters(inSchema, span = 4) {
-        return createFilter(this.props.form, inSchema, span)
+        return createFilter(this.formRef, inSchema, span)
     }
 
     async componentDidMount() {
@@ -401,9 +402,8 @@ class DataList extends PureComponent {
      * 充值查询
      */
     handleFormReset = () => {
-        const { form } = this.props
-        const { order } = this.props
-        form.resetFields()
+        const {order} = this.props
+        this.formRef.current.resetFields()
         this.setState(
             {
                 pagination: { ...this.state.pagination, currentPage: 1 },
@@ -419,44 +419,39 @@ class DataList extends PureComponent {
      * 处理搜索触发事件
      * @param e
      */
-    handleSearch = (e) => {
-        e.preventDefault()
+    handleSearch = (fieldsValue) => {
 
-        const { form } = this.props
-        form.validateFields((err, fieldsValue) => {
-            if (err) return
+        const allValues = fieldsValue
+        const values = {
+            ...allValues,
+            updatedAt:
+                fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        }
 
-            const allValues = form.getFieldsValue()
-            const values = {
-                ...allValues,
-                updatedAt:
-                    fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        this.setState({
+            searchValues: values,
+        })
+
+        //  更新列表
+        const searchValues = {...this.state.searchValues}
+        Object.keys(values).forEach((key) => {
+            if (!values[key]) {
+                return
             }
 
-            this.setState({
-                searchValues: values,
-            })
-
-            //  更新列表
-            const searchValues = { ...this.state.searchValues }
-            Object.keys(values).forEach((key) => {
-                if (!values[key]) {
-                    return
-                }
-
-                searchValues[key] = values[key]
-            })
-
-            this.setState(
-                {
-                    pagination: { ...this.state.pagination, currentPage: 1 },
-                    searchValues,
-                },
-                async () => {
-                    this.refreshList()
-                }
-            )
+            searchValues[key] = values[key]
         })
+
+        this.setState(
+            {
+                pagination: null,
+                searchValues,
+            },
+            async () => {
+                this.refreshList()
+            }
+        )
+        // e.preventDefault()
     }
 
     /**
@@ -864,7 +859,7 @@ class DataList extends PureComponent {
      */
     createSearchBar(filters) {
         return (
-            <SearchForm onSubmit={this.handleSearch}>
+            <SearchForm ref={this.formRef} onFinish={this.handleSearch}>
                 <Row gutter={8} type="flex">
                     {filters}
 
