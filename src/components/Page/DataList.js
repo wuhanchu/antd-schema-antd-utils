@@ -1,6 +1,6 @@
 import StandardTable from '../StandardTable';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Card, Col, Divider, message, Popconfirm, Row, Form } from 'antd';
+import { Button, Card, Col, Divider, Form, message, Popconfirm, Row } from 'antd';
 import isEqual from 'lodash.isequal';
 import React, { Fragment, PureComponent } from 'react';
 import { createFilter, getListColumn } from '../../utils/component';
@@ -12,23 +12,12 @@ import { exportData } from '../../utils/xlsx';
 import ImportModal from '@/outter/fr-schema-antd-utils/src/components/modal/ImportModal';
 import { exportDataByTemplate } from '@/outter/fr-schema-antd-utils/src/utils/xlsx';
 import * as _ from 'lodash';
-import styled from 'styled-components';
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
 const getValue = (obj) =>
     Object.keys(obj)
         .map((key) => obj[key])
         .join(",")
-
-export const SearchForm = styled(Form)`
-    & .ant-row {
-        margin-bottom: 4px;
-    }
-
-    & button {
-        margin-top: 4px;
-    }
-`
 
 /**
  * 基于 schema 对象自动生成列表组件
@@ -224,7 +213,7 @@ class DataList extends PureComponent {
                                 }
                                 noMatch={null}
                             >
-                                <Divider type="vertical" />
+                                <Divider type="vertical"/>
                                 <Popconfirm
                                     title="是否要删除此行？"
                                     onConfirm={async (e) => {
@@ -246,7 +235,8 @@ class DataList extends PureComponent {
     /**
      * 表格操作列，扩展方法
      */
-    renderOperateColumnExtend(record) {}
+    renderOperateColumnExtend(record) {
+    }
 
     componentWillReceiveProps(nextProps, nextContents) {
         if (nextProps.meta && nextProps.meta !== this.props.meta) {
@@ -340,18 +330,18 @@ class DataList extends PureComponent {
     getSearchParam() {
         let searchParams = {}
         this.state.searchValues &&
-            Object.keys(this.state.searchValues).forEach((key) => {
-                if (!_.isNil(this.state.searchValues[key])) {
-                    const prefix =
-                        (this.schema[key] && this.schema[key].searchPrefix) ||
-                        ""
-                    let value = this.state.searchValues[key]
-                    if (prefix == "like") {
-                        value = "*" + value + "*"
-                    }
-                    searchParams[key] = (prefix ? prefix + "." : "") + value
+        Object.keys(this.state.searchValues).forEach((key) => {
+            if (!_.isNil(this.state.searchValues[key])) {
+                const prefix =
+                    (this.schema[key] && this.schema[key].searchPrefix) ||
+                    ""
+                let value = this.state.searchValues[key]
+                if (prefix == "like") {
+                    value = "*" + value + "*"
                 }
-            })
+                searchParams[key] = (prefix? prefix + "." : "") + value
+            }
+        })
         return searchParams
     }
 
@@ -376,7 +366,7 @@ class DataList extends PureComponent {
 
         if (sorter.field) {
             params.order = `${sorter.field.replace("_remark", "")}${
-                sorter.order == "ascend" ? ".asc" : ".desc"
+                sorter.order == "ascend"? ".asc" : ".desc"
             }`
         }
 
@@ -402,7 +392,7 @@ class DataList extends PureComponent {
      * 充值查询
      */
     handleFormReset = () => {
-        const {order} = this.props
+        const { order } = this.props
         this.formRef.current.resetFields()
         this.setState(
             {
@@ -433,7 +423,7 @@ class DataList extends PureComponent {
         })
 
         //  更新列表
-        const searchValues = {...this.state.searchValues}
+        const searchValues = { ...this.state.searchValues }
         Object.keys(values).forEach((key) => {
             if (!values[key]) {
                 return
@@ -511,15 +501,15 @@ class DataList extends PureComponent {
         const idKey = getPrimaryKey(this.schema)
 
         this.state.data &&
-            this.state.data.list.some((item, index) => {
-                if (data[idKey] == item[idKey]) {
-                    this.state.data.list[index] = decorateItem(
-                        data,
-                        this.schema
-                    )
-                    return true
-                }
-            })
+        this.state.data.list.some((item, index) => {
+            if (data[idKey] == item[idKey]) {
+                this.state.data.list[index] = decorateItem(
+                    data,
+                    this.schema
+                )
+                return true
+            }
+        })
 
         //
         this.setState({
@@ -704,7 +694,8 @@ class DataList extends PureComponent {
         )
     }
 
-    downloadImportTemplate() {}
+    downloadImportTemplate() {
+    }
 
     /**
      * 渲染操作栏
@@ -724,8 +715,8 @@ class DataList extends PureComponent {
                     <Col>
                         {this.renderOperationButtons()}
                         {showSelect &&
-                            selectedRows.length > 0 &&
-                            this.renderOperationMulit()}
+                        selectedRows.length > 0 &&
+                        this.renderOperationMulit()}
                     </Col>
                     <Col>{this.renderOperationExtend()}</Col>
                 </Row>
@@ -756,12 +747,14 @@ class DataList extends PureComponent {
     /**
      * 操作栏扩展
      */
-    renderOperationExtend() {}
+    renderOperationExtend() {
+    }
 
     /**
      * 列表扩展
      */
-    renderExtend() {}
+    renderExtend() {
+    }
 
     /**
      * 渲染表格
@@ -859,7 +852,7 @@ class DataList extends PureComponent {
      */
     createSearchBar(filters) {
         return (
-            <SearchForm ref={this.formRef} onFinish={this.handleSearch}>
+            <Form ref={this.formRef} onFinish={this.handleSearch}>
                 <Row gutter={8} type="flex">
                     {filters}
 
@@ -877,7 +870,7 @@ class DataList extends PureComponent {
                         </Row>
                     </Col>
                 </Row>
-            </SearchForm>
+            </Form>
         )
     }
 
@@ -894,7 +887,8 @@ class DataList extends PureComponent {
     /**
      * 搜索的实现
      */
-    renderSearchBar() {}
+    renderSearchBar() {
+    }
 
     render() {
         const { visibleModal, visibleImport } = this.state
