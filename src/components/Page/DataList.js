@@ -175,7 +175,7 @@ class DataList extends PureComponent {
      */
     renderOperateColumn(props = {}) {
         const { scroll } = this.meta
-        const { showEdit = true, showDelete = true } = props
+        const { showEdit = true, showDelete = true } = { ...this.meta, ...props }
         return (
             !this.meta.readOnly &&
             !this.props.readOnly && {
