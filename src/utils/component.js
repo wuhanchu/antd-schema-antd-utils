@@ -2,20 +2,7 @@ import React, { Fragment } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-    Avatar,
-    Button,
-    Col,
-    Divider,
-    Mentions,
-    Row,
-    Select,
-    Tabs,
-    Tooltip,
-    Transfer,
-    Upload,
-    Form,
-} from 'antd';
+import { Avatar, Button, Col, Divider, Form, Mentions, Row, Select, Tabs, Tooltip, Transfer, Upload } from 'antd';
 
 import dictComponents from './componentDict';
 import frSchema from '@/outter/fr-schema/src';
@@ -162,7 +149,7 @@ export function createInput(
         disabled:
             action === actions.show ||
             (action === actions.edit && item.readOnly),
-        onChange: function (event) {
+        onChange: function(event) {
             const value =
                 event && event.currentTarget? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
@@ -336,7 +323,7 @@ export function createComponent(
             // options
             item.dict &&
             Object.values(item.dict).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     //check the dict Whether it matches
                     if (
                         dictItem.condition &&
@@ -348,7 +335,7 @@ export function createComponent(
                             }
                         } else if (
                             Object.keys(dictItem.condition).some(
-                                function (key) {
+                                function(key) {
                                     return (
                                         !this ||
                                         !this.state ||
@@ -413,7 +400,7 @@ export function createComponent(
             // options
             item.options &&
             Object.values(item.options).forEach(
-                function (dictItem) {
+                function(dictItem) {
                     // add to options
                     return options.push(
                         <MentionsOption
@@ -665,9 +652,19 @@ export function createForm(
     });
 
     if (result instanceof Array) {
+
+        // 清理 null 的数据
+        let initialValues = {};
+        Object.keys(data).forEach(key => {
+            if (!_.isNil(data[key])) {
+                initialValues[key] = data[key];
+            }
+        });
+
         return (
             <Form
                 ref={form}
+                initialValues={initialValues}
                 labelCol={globalStyle.form.labelCol}
                 wrapperCol={globalStyle.form.wrapperCol}
                 {...formProps}
