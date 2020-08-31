@@ -1,8 +1,9 @@
+import React, { Fragment, PureComponent } from 'react';
+
 import StandardTable from '../StandardTable';
 import '@ant-design/compatible/assets/index.css';
 import { Button, Card, Col, Divider, Form, message, Popconfirm, Row } from 'antd';
 import isEqual from 'lodash.isequal';
-import React, { Fragment, PureComponent } from 'react';
 import { createFilter, getListColumn } from '../../utils/component';
 import Authorized from '../Authorized/Authorized';
 import styles from './DataList.less';
@@ -14,6 +15,7 @@ import { exportDataByTemplate } from '@/outter/fr-schema-antd-utils/src/utils/xl
 import * as _ from 'lodash';
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
+
 const getValue = (obj) =>
     Object.keys(obj)
         .map((key) => obj[key])

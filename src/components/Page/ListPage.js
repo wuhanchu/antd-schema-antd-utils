@@ -1,7 +1,9 @@
 import React from "react"
+import { PageHeaderWrapper } from "@ant-design/pro-layout"
 
 import DataList from "./DataList"
-import { PageHeaderWrapper } from "@ant-design/pro-layout"
+
+console.log("DataList", DataList)
 
 /**
  * meta 包含
