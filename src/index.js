@@ -1,10 +1,11 @@
-import Authorized from './components/Authorized';
+import Authorized from './components/Authorized/Authorized';
 
 import ConfForm from './components/Page/ConfForm';
 import ExtendModal from './components/Page/ExtendModal';
 import InfoForm from './components/Page/InfoForm';
 import InfoModal from './components/Page/InfoModal';
-import ListPage, { DataList } from './components/Page/ListPage';
+import DataList from './components/Page/DataList';
+import ListPage from './components/Page/ListPage';
 
 import * as authority from "./utils/authority"
 import * as component from "./utils/component"
@@ -14,6 +15,7 @@ import * as model from "./utils/model"
 import * as url from "./utils/url"
 import * as utils from "./utils/utils"
 import * as xlsx from "./utils/xlsx"
+import SecurityLayout from "./layouts/SecurityLayout";
 
 export let schemas = null
 export let services = null
@@ -29,7 +31,12 @@ function init(initSchema, initServices) {
 }
 
 export default {
-    init, components: {
+    init,
+    layouts: {
+        SecurityLayout
+    },
+    components: {
+        SecurityLayout,
         Authorized,
         ConfForm,
         ExtendModal,
