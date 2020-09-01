@@ -438,6 +438,14 @@ export function createComponent(
             );
             break;
 
+        case 'RangePicker':
+            let {placeholder, ...others} = props;
+            component = React.createElement(dictComponents[type], {
+                style: { width: defaultWidth },
+                ...others,
+            });
+            break;
+
         // create the upload input
         // case schemaFieldType.Table:
         //
