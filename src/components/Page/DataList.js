@@ -10,8 +10,8 @@ import styles from './DataList.less';
 import InfoModal from './InfoModal';
 import frSchema from '@/outter/fr-schema/src';
 import { exportData } from '../../utils/xlsx';
-import ImportModal from '@/outter/fr-schema-antd-utils/src/components/modal/ImportModal';
-import { exportDataByTemplate } from '@/outter/fr-schema-antd-utils/src/utils/xlsx';
+import ImportModal from '../modal/ImportModal';
+import { exportDataByTemplate } from '../../utils/xlsx';
 import * as _ from 'lodash';
 
 const { actions, schemas, decorateList, decorateItem, getPrimaryKey } = frSchema
@@ -854,7 +854,7 @@ class DataList extends PureComponent {
      */
     createSearchBar(filters) {
         return (
-            <Form ref={this.formRef} onFinish={this.handleSearch}>
+            <Form ref={this.formRef} onFinish={this.props.handleSearch || this.handleSearch}>
                 <Row gutter={8} type="flex">
                     {filters}
 

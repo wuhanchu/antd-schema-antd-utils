@@ -4,8 +4,8 @@ import ConfForm from './components/Page/ConfForm';
 import ExtendModal from './components/Page/ExtendModal';
 import InfoForm from './components/Page/InfoForm';
 import InfoModal from './components/Page/InfoModal';
-import ListPage from './components/Page/ListPage';
 import DataList from './components/Page/DataList';
+import ListPage from './components/Page/ListPage';
 
 import * as authority from "./utils/authority"
 import * as component from "./utils/component"
