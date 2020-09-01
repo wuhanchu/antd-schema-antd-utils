@@ -1,9 +1,9 @@
 import React from "react"
 import { PageHeaderWrapper } from "@ant-design/pro-layout"
 
-import DataList from "./DataList"
+import { default as tempDataList } from "./DataList"
 
-console.log("DataList", DataList)
+export const DataList = tempDataList
 
 /**
  * meta 包含
