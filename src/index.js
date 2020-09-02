@@ -15,7 +15,7 @@ import * as model from "./utils/model"
 import * as url from "./utils/url"
 import * as utils from "./utils/utils"
 import * as xlsx from "./utils/xlsx"
-import SecurityLayout from "./layouts/SecurityLayout";
+import {SecurityLayout} from "./layouts/SecurityLayout";
 
 export let schemas = null
 export let services = null
