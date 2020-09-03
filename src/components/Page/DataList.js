@@ -333,7 +333,7 @@ class DataList extends PureComponent {
         let searchParams = {}
         this.state.searchValues &&
         Object.keys(this.state.searchValues).forEach((key) => {
-            if (!_.isNil(this.state.searchValues[key])) {
+            if (!_.isNil(this.state.searchValues[key]) && this.state.searchValues[key] !== "") {
                 const prefix =
                     (this.schema[key] && this.schema[key].searchPrefix) ||
                     ""
@@ -341,6 +341,7 @@ class DataList extends PureComponent {
                 if (prefix == "like") {
                     value = "*" + value + "*"
                 }
+
                 searchParams[key] = (prefix? prefix + "." : "") + value
             }
         })
@@ -395,6 +396,7 @@ class DataList extends PureComponent {
      */
     handleFormReset = () => {
         const { order } = this.props
+
         this.formRef.current.resetFields()
         this.setState(
             {
@@ -413,25 +415,16 @@ class DataList extends PureComponent {
      */
     handleSearch = (fieldsValue) => {
 
-        const allValues = fieldsValue
-        const values = {
-            ...allValues,
-            updatedAt:
-                fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-        }
-
-        this.setState({
-            searchValues: values,
-        })
-
         //  更新列表
         const searchValues = { ...this.state.searchValues }
-        Object.keys(values).forEach((key) => {
-            if (!values[key]) {
+
+        Object.keys(fieldsValue).forEach((key) => {
+            if (!fieldsValue[key]) {
+                delete searchValues[key]
                 return
             }
 
-            searchValues[key] = values[key]
+            searchValues[key] = fieldsValue[key]
         })
 
         this.setState(
