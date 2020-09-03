@@ -436,7 +436,7 @@ class DataList extends PureComponent {
 
         this.setState(
             {
-                pagination: null,
+                pagination: { ...this.state.pagination, currentPage: 1 },
                 searchValues,
             },
             async () => {
