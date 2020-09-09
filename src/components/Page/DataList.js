@@ -409,12 +409,8 @@ class DataList extends PureComponent {
         )
     }
 
-    /**
-     * 处理搜索触发事件
-     * @param e
-     */
-    handleSearch = (fieldsValue) => {
-
+    // 搜索
+    onSearch(fieldsValue) {
         //  更新列表
         const searchValues = { ...this.state.searchValues }
 
@@ -436,6 +432,14 @@ class DataList extends PureComponent {
                 this.refreshList()
             }
         )
+    }
+
+    /**
+     * 处理搜索触发事件
+     * @param e
+     */
+    handleSearch = (fieldsValue) => {
+        this.onSearch(fieldsValue);
         // e.preventDefault()
     }
 
