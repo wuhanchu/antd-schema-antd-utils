@@ -701,7 +701,7 @@ class DataList extends PureComponent {
      * @returns {*}
      */
     renderOperationBar() {
-        const { showSelect } = this.meta
+        const { showSelect, showDelete = true } = this.meta
         const { selectedRows } = this.state
 
         return (
@@ -713,7 +713,7 @@ class DataList extends PureComponent {
                 >
                     <Col>
                         {this.renderOperationButtons()}
-                        {showSelect &&
+                        {showDelete && showSelect &&
                         selectedRows.length > 0 &&
                         this.renderOperationMulit()}
                     </Col>
@@ -899,10 +899,9 @@ class DataList extends PureComponent {
 
         // 操作栏
         let operationBar = null
+        operationBar = this.renderOperationBar && this.renderOperationBar()
         if (renderOperationBar) {
             operationBar = renderOperationBar()
-        } else if (this.props.renderOperationBar !== null) {
-            operationBar = this.renderOperationBar && this.renderOperationBar()
         }
 
         // 搜索栏
