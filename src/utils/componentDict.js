@@ -12,6 +12,7 @@ import {
     TreeSelect,
     Upload
 } from "antd"
+import JsonViewer from 'react-json-view'
 
 const { TextArea, Password } = Input
 const { Option } = Select
@@ -35,5 +36,6 @@ export default {
     Avatar,
     RadioGroup,
     Password,
-    Mentions
+    Mentions,
+    JsonViewer
 }

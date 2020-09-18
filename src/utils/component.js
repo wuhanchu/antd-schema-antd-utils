@@ -3,7 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Avatar, Button, Col, Divider, Form, Mentions, Row, Select, Tabs, Tooltip, Transfer, Upload } from 'antd';
-
+import JsonViewer from 'react-json-view'
 import dictComponents from './componentDict';
 import frSchema from '@/outter/fr-schema/src';
 import styles from '../styles/basic.less';
@@ -286,10 +286,61 @@ export function createComponent(
     // if (data) {
     //     props.value = data;
     // }
+    let key = item.dataIndex
+
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
             break;
+        
+        case 'JsonViewer' :
+            let jsonValue = []
+            component = <div value={jsonValue}><JsonViewer 
+            sortKeys
+            style={{ backgroundColor: "white" }}
+            src={data[key]}
+            collapseStringsAfterLength={12}
+            // value={jsonValue}
+            displayObjectSize={true}
+            name={null}
+            enableClipboard={copy => {
+                console.log("you copied to clipboard!", copy)
+            }}
+            onEdit={async e => {
+                if (e.new_value == "error") {
+                    return false
+                }
+
+                let obj={}
+                obj[key]=e.updated_src
+                console.log(props)
+                props.form.current.setFieldsValue(obj);
+            }}
+            onDelete={async e => {
+                let obj={}
+                obj[key]=e.updated_src
+                props.form.current.setFieldsValue(obj);
+
+            }}
+            onAdd={async e => {
+                if (e.new_value == "error") {
+                    return false
+                }
+                let obj={}
+                obj[key]=e.updated_src
+                props.form.current.setFieldsValue(obj);
+
+            }}
+            shouldCollapse={({ src, namespace, type }) => {
+                if (type === "array" && src.indexOf("test") > -1) {
+                    return true
+                } else if (namespace.indexOf("moment") > -1) {
+                    return true
+                }
+                return false
+            }}
+            defaultValue=""></JsonViewer></div>
+            break
         case schemaFieldType.Transfer:
             component = (
                 <Transfer
