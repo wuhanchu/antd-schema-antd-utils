@@ -337,9 +337,12 @@ class DataList extends PureComponent {
                 const prefix =
                     (this.schema[key] && this.schema[key].searchPrefix) ||
                     ""
+
                 let value = this.state.searchValues[key]
-                if (prefix == "like") {
+                if (prefix === "like") {
                     value = "*" + value + "*"
+                } else if (prefix === "cs" || prefix === "cd") {
+                    value = "{" + value + "}"
                 }
 
                 searchParams[key] = (prefix? prefix + "." : "") + value
