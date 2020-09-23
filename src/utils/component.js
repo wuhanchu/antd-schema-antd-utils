@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-// import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Avatar, Button, Col, Divider, Form, Mentions, Row, Select, Tabs, Tooltip, Transfer, Upload } from 'antd';
 import JsonViewer from 'react-json-view'
@@ -127,7 +126,8 @@ function fieldToColumn(key, item) {
  * @param data 当前record的数据
  * @param form form对象
  * @param action 当前操作
- * @param itmePorps 会传入到FormItem的属性，没有传{}
+ * @param itemProps
+ * @param colNum
  * colNum 一行有几个字段
  * @returns {*}
  */
@@ -139,7 +139,11 @@ export function createInput(
     itemProps = {},
     colNum = 1,
 ) {
-    const type = item.type || 'Input';
+    let type = item.type;
+    if (!type) {
+        type = "Input"
+    }
+
     // component props
     let props = {
         form,
@@ -149,7 +153,7 @@ export function createInput(
         disabled:
             action === actions.show ||
             (action === actions.edit && item.readOnly),
-        onChange: function(event) {
+        onChange: function (event) {
             const value =
                 event && event.currentTarget? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
@@ -170,44 +174,14 @@ export function createInput(
     let defaultWidth =
         (globalStyle.form.input.width*(colNum > 3? 3 : colNum))/colNum;
 
-    // initialValue
-    let initialValue = data && data[item.dataIndex];
-
-    // 是否有定制方法
-    form && delete props.defaultValue;
-    let tempData = data;
-    if (item.type === schemaFieldType.Transfer) {
-        tempData = data[item.dataIndex];
-    }
-
-    let tempProps = {
+    props = {
         style: item.style || { width: defaultWidth },
         placeholder: !props.readOnly? `请输入${item.title}` : null,
         ...props,
     };
 
-    if (!form) {
-        tempProps.value = initialValue;
-    }
-
-    if (item.renderInput) {
-        component = item.renderInput.bind(this)(
-            item,
-            form? tempData : null,
-            tempProps,
-            action,
-        );
-    } else {
-        component = createComponent.bind(this)(
-            item,
-            form? tempData : null,
-            tempProps,
-            action,
-            defaultWidth,
-        );
-    }
-
-    // set the decoratorProps
+    // 初始值
+    let initialValue = data && data[item.dataIndex];
     switch (type) {
         case 'MultiSelect':
         case 'Select':
@@ -221,24 +195,37 @@ export function createInput(
                 : null;
             break;
     }
+    if (!form) {
+        props.value = initialValue;
+    } else {
+        itemProps.initialValue = initialValue
+    }
+
+    // 构建组件
+    let tempData = data;
+    if (item.type === schemaFieldType.Transfer) {
+        tempData = data[item.dataIndex];
+    }
+
+    if (item.renderInput) {
+        component = item.renderInput.bind(this)(
+            item,
+            form? tempData : null,
+            props,
+            action,
+        );
+    } else {
+        component = createComponent.bind(this)(
+            item,
+            form? tempData : null,
+            props,
+            action,
+            defaultWidth,
+        );
+    }
+
+    //创建
     decoratorProps = convertDecoratorProps(item);
-
-    // init data
-    if (
-        component.props.defaultValue &&
-        action === actions.add &&
-        (initialValue === null || initialValue === undefined)
-    ) {
-        initialValue = component.props.defaultValue;
-        delete component.props.defaultValue;
-    }
-
-    if (initialValue !== null && initialValue !== undefined) {
-        decoratorProps.initialValue = initialValue;
-    }
-
-    //  delete the defaultValue
-    // component.props && (delete component.props.defaultValue)
     return !this ||
     !this.state ||
     !item.infoShowFunc ||
@@ -276,70 +263,67 @@ export function createComponent(
     action = actions.add,
     defaultWidth = 200,
 ) {
-    const type = item.type || 'Input';
+    let type = item.type;
+    if (!type) {
+        type = "Input"
+    }
     let component,
         defaultValue = null;
     let options = [];
 
     let props = { ...item.props, ...extraProps };
-
-    // if (data) {
-    //     props.value = data;
-    // }
     let key = item.dataIndex
 
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
             break;
-        
+
         case 'JsonViewer' :
-            let jsonValue = []
-            component = <div value={jsonValue}><JsonViewer 
-            sortKeys
-            style={{ backgroundColor: "white" }}
-            src={data[key]}
-            collapseStringsAfterLength={12}
-            // value={jsonValue}
-            displayObjectSize={true}
-            name={null}
-            enableClipboard={copy => {
-                console.log("you copied to clipboard!", copy)
-            }}
-            onEdit={async e => {
-                if (e.new_value == "error") {
+            component = <JsonViewer
+                sortKeys
+                style={{ backgroundColor: "white" }}
+                src={data[key]}
+                collapseStringsAfterLength={12}
+                displayObjectSize={true}
+                name={null}
+                enableClipboard={copy => {
+                    console.log("you copied to clipboard!", copy)
+                }}
+                onEdit={async e => {
+                    if (e.new_value === "error") {
+                        return false
+                    }
+
+                    let obj = {}
+                    obj[key] = e.updated_src
+                    console.log(props)
+                    props.form.current.setFieldsValue(obj);
+                }}
+                onDelete={async e => {
+                    let obj = {}
+                    obj[key] = e.updated_src
+                    props.form.current.setFieldsValue(obj);
+
+                }}
+                onAdd={async e => {
+                    if (e.new_value === "error") {
+                        return false
+                    }
+                    let obj = {}
+                    obj[key] = e.updated_src
+                    props.form.current.setFieldsValue(obj);
+
+                }}
+                shouldCollapse={({ src, namespace, type }) => {
+                    if (type === "array" && src.indexOf("test") > -1) {
+                        return true
+                    } else if (namespace.indexOf("moment") > -1) {
+                        return true
+                    }
                     return false
-                }
-
-                let obj={}
-                obj[key]=e.updated_src
-                console.log(props)
-                props.form.current.setFieldsValue(obj);
-            }}
-            onDelete={async e => {
-                let obj={}
-                obj[key]=e.updated_src
-                props.form.current.setFieldsValue(obj);
-
-            }}
-            onAdd={async e => {
-                if (e.new_value == "error") {
-                    return false
-                }
-                let obj={}
-                obj[key]=e.updated_src
-                props.form.current.setFieldsValue(obj);
-
-            }}
-            shouldCollapse={({ src, namespace, type }) => {
-                if (type === "array" && src.indexOf("test") > -1) {
-                    return true
-                } else if (namespace.indexOf("moment") > -1) {
-                    return true
-                }
-                return false
-            }}
-            defaultValue=""></JsonViewer></div>
+                }}
+                defaultValue=""/>
             break
         case schemaFieldType.Transfer:
             component = (
@@ -374,7 +358,7 @@ export function createComponent(
             // options
             item.dict &&
             Object.values(item.dict).forEach(
-                function(dictItem) {
+                function (dictItem) {
                     //check the dict Whether it matches
                     if (
                         dictItem.condition &&
@@ -386,7 +370,7 @@ export function createComponent(
                             }
                         } else if (
                             Object.keys(dictItem.condition).some(
-                                function(key) {
+                                function (key) {
                                     return (
                                         !this ||
                                         !this.state ||
@@ -451,7 +435,7 @@ export function createComponent(
             // options
             item.options &&
             Object.values(item.options).forEach(
-                function(dictItem) {
+                function (dictItem) {
                     // add to options
                     return options.push(
                         <MentionsOption
@@ -490,7 +474,7 @@ export function createComponent(
             break;
 
         case 'RangePicker':
-            let {placeholder, ...others} = props;
+            let { placeholder, ...others } = props;
             component = React.createElement(dictComponents[type], {
                 style: { width: defaultWidth },
                 ...others,
