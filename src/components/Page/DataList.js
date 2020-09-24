@@ -73,6 +73,7 @@ class DataList extends PureComponent {
 
     /**
      * create search filter
+     * @deprecated
      * @param params
      */
     createFilters(inSchema, span = 4) {
