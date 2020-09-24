@@ -617,7 +617,7 @@ export function createFilter(form, inSchema, span, data) {
     let filter = Object.keys(schema).map(key => {
         return (
             <Col span={schema[key].span || span} key={'filter_' + key}>
-                {createInput.bind(null)(
+                {createInput.bind(this)(
                     {
                         ...schema[key],
                         dataIndex: key,
