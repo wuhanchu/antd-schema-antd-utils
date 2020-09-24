@@ -181,24 +181,26 @@ export function createInput(
     };
 
     // 初始值
-    let initialValue = data && data[item.dataIndex];
-    switch (type) {
-        case 'MultiSelect':
-        case 'Select':
-            initialValue =
-                data && selectValueConvert(item, data[item.dataIndex]) ||
-                getItemDefaultValue(item);
-            break;
-        case 'DatePicker':
-            initialValue = initialValue
-                ? moment(initialValue, moment.ISO_8601)
-                : null;
-            break;
-    }
-    if (!form) {
-        props.value = initialValue;
-    } else {
-        itemProps.initialValue = initialValue
+    if (data) {
+        let initialValue = data[item.dataIndex];
+        switch (type) {
+            case 'MultiSelect':
+            case 'Select':
+                initialValue =
+                    selectValueConvert(item, data[item.dataIndex]) ||
+                    getItemDefaultValue(item);
+                break;
+            case 'DatePicker':
+                initialValue = initialValue
+                    ? moment(initialValue, moment.ISO_8601)
+                    : null;
+                break;
+        }
+        if (!form) {
+            props.value = initialValue;
+        } else {
+            itemProps.initialValue = initialValue
+        }
     }
 
     // 构建组件
@@ -417,9 +419,9 @@ export function createComponent(
                 <Select
                     showSearch
                     allowClear
+                    defaultValue={defaultValue}
                     style={{ width: defaultWidth, ...(item.style || {}) }}
                     mode={mode}
-                    // value={data}
                     optionFilterProp="children"
                     placeholder={!props.readOnly && '请选择'}
                     disabled={props.readOnly}
@@ -481,14 +483,6 @@ export function createComponent(
             });
             break;
 
-        // create the upload input
-        // case schemaFieldType.Table:
-        //
-        //     const Component = await import(item.componentPath)
-        //     component = <Component {...props} />
-        //     break
-        //
-        //  other component
         default:
             component = React.createElement(dictComponents[type], {
                 style: { width: defaultWidth },
@@ -606,7 +600,7 @@ function selectValueConvert(item, initialValue) {
  * @param span
  * @returns {*[]}
  */
-export function createFilter(form, inSchema, span, data = {}) {
+export function createFilter(form, inSchema, span, data) {
     let schema = clone(inSchema);
     Object.keys(schema).forEach(key => {
         if (!schema[key]) {
