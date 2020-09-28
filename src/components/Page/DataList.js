@@ -858,7 +858,7 @@ class DataList extends PureComponent {
             <Form ref={this.formRef} onFinish={this.props.handleSearch || this.handleSearch}>
                 <Row gutter={8} type="flex">
                     {filters}
-
+                    {this.renderSearchBarExtra()}
                     <Col>
                         <Row>
                             <Button type="primary" htmlType="submit">
@@ -875,6 +875,11 @@ class DataList extends PureComponent {
                 </Row>
             </Form>
         )
+    }
+
+    // 查询扩展
+    renderSearchBarExtra() {
+        return null
     }
 
     renderImportModal() {
