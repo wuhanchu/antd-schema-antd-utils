@@ -33,13 +33,13 @@ const menuDataRender = (menuList) =>
     menuList.map((item) => {
         const localItem = {
             ...item,
-            children: item.children ? menuDataRender(item.children) : [],
+            children: item.children? menuDataRender(item.children) : [],
         }
         return Authorized.check(item.authority, localItem, null)
     })
 
 const defaultFooterDom = (
-    <DefaultFooter copyright={config.copyright || ""} links={[]} />
+    <DefaultFooter copyright={config.copyright || ""} links={[]}/>
 )
 
 const BasicLayout = (props) => {
@@ -85,16 +85,14 @@ const BasicLayout = (props) => {
 
     const { formatMessage } = useIntl()
 
+
+
     return (
         <ProLayout
-            logo={logo}
             formatMessage={formatMessage}
-            menuHeaderRender={(logoDom, titleDom) => (
-                <Link to={"/"}>
-                    {logoDom}
-                    {titleDom}
-                </Link>
-            )}
+            menuHeaderRender={false}
+            breadcrumbRender={(routes) => []}
+            menuDataRender={menuDataRender}
             onCollapse={handleMenuCollapse}
             menuItemRender={(menuItemProps, defaultDom) => {
                 if (
@@ -107,28 +105,21 @@ const BasicLayout = (props) => {
 
                 return <Link to={menuItemProps.path}>{defaultDom}</Link>
             }}
-            breadcrumbRender={(routers = []) => [
-                {
-                    path: "/",
-                    breadcrumbName: formatMessage({
-                        id: "menu.home",
-                    }),
-                },
-                ...routers,
-            ]}
-            itemRender={(route, params, routes, paths) => {
-                const first = routes.indexOf(route) === 0
-                return first ? (
-                    <Link to={paths.join("/")}>{route.breadcrumbName}</Link>
-                ) : (
-                    <span>{route.breadcrumbName}</span>
-                )
-            }}
-            footerRender={() => defaultFooterDom}
-            menuDataRender={menuDataRender}
-            rightContentRender={() => <RightContent />}
             {...props}
             {...settings}
+            {...{
+                "navTheme": "light",
+                "layout": "mix",
+                "contentWidth": "Fluid",
+                "fixedHeader": false,
+                "fixSiderbar": false,
+                "menu": {
+                    "locale": true
+                },
+                "headerRender": false,
+                "footerRender": false,
+                "menuHeaderRender": false
+            }}
             loading={!init}
         >
             {children}
