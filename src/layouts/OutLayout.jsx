@@ -7,24 +7,11 @@ import ProLayout, { DefaultFooter } from "@ant-design/pro-layout"
 import React, { useEffect } from "react"
 import { connect, Link, useIntl } from "umi"
 import { Button, Result } from "antd"
-import RightContent from "@/components/GlobalHeader/RightContent"
-import logo from "@/assets/logo.svg"
 
 import Authorized from "../components/Authorized/Authorized"
 
 const config = SETTING
-const noMatch = (
-    <Result
-        status={403}
-        title="403"
-        subTitle="Sorry, you are not authorized to access this page."
-        extra={
-            <Button type="primary">
-                <Link to="/user/login">Go Login</Link>
-            </Button>
-        }
-    />
-)
+
 
 /**
  * use Authorized check all menu item
@@ -70,18 +57,6 @@ const BasicLayout = (props) => {
         initCallback && initCallback()
     }, [init])
 
-    /**
-     * init variables
-     */
-
-    const handleMenuCollapse = (payload) => {
-        if (dispatch) {
-            dispatch({
-                type: "global/changeLayoutCollapsed",
-                payload,
-            })
-        }
-    } // get children authority
 
     const { formatMessage } = useIntl()
 
@@ -90,21 +65,8 @@ const BasicLayout = (props) => {
     return (
         <ProLayout
             formatMessage={formatMessage}
-            menuHeaderRender={false}
-            breadcrumbRender={(routes) => []}
-            menuDataRender={menuDataRender}
-            onCollapse={handleMenuCollapse}
-            menuItemRender={(menuItemProps, defaultDom) => {
-                if (
-                    menuItemProps.isUrl ||
-                    menuItemProps.children ||
-                    !menuItemProps.path
-                ) {
-                    return defaultDom
-                }
 
-                return <Link to={menuItemProps.path}>{defaultDom}</Link>
-            }}
+            hide={true}
             {...props}
             {...settings}
             {...{
