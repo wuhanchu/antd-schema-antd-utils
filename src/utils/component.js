@@ -275,17 +275,16 @@ export function createComponent(
 
     let props = { ...item.props, ...extraProps };
     let key = item.dataIndex
-
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
             break;
 
         case 'JsonViewer' :
-            component = <JsonViewer
+            component = <div><JsonViewer
                 sortKeys
                 style={{ backgroundColor: "white" }}
-                src={data[key]}
+                src={ data[key]}
                 collapseStringsAfterLength={12}
                 displayObjectSize={true}
                 name={null}
@@ -325,7 +324,7 @@ export function createComponent(
                     }
                     return false
                 }}
-                defaultValue=""/>
+                defaultValue=""/></div>
             break
         case schemaFieldType.Transfer:
             component = (
