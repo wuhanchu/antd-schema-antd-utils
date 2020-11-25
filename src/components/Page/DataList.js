@@ -43,6 +43,7 @@ class DataList extends PureComponent {
         selectedRows: [],
         searchValues: {},
         infoData: {},
+        tableFooter: [],
     }
     schema = {}
 
@@ -83,6 +84,9 @@ class DataList extends PureComponent {
     async componentDidMount() {
         await this.refreshList()
         this._ismounted = true
+        let list = [];
+        this.columns.map((item) => item.showFooter && list.push({key: item.key, title: item.title}))
+        this.setState({tableFooter: [...list]});
     }
 
     /**
@@ -594,6 +598,15 @@ class DataList extends PureComponent {
         this.props.handleChangeCallback && this.props.handleChangeCallback()
     }
 
+    // 累加(主要是金额)
+    reduceTableTotal(dataIndex) {
+        let sumprice = this.state.data.list.reduce(function (total, currentValue, currentIndex, arr) {
+            return total + parseFloat(currentValue[dataIndex.key]);
+        }, 0);
+
+        return dataIndex.title + ':' + sumprice.toFixed(2)
+    }
+
     /**
      * 模块讲修改
      * @param nextProps
@@ -767,7 +780,7 @@ class DataList extends PureComponent {
     renderList(inProps = {}) {
         let { loading } = this.props
         const { showSelect, scroll, mini } = this.meta
-        const { data, listLoading, selectedRows } = this.state
+        let { data, listLoading, selectedRows, tableFooter } = this.state
 
         // judge weather hide select
         let otherProps = {}
@@ -785,6 +798,13 @@ class DataList extends PureComponent {
         }
 
         const columns = this.getColumns()
+
+        let footer = ''
+        // 列表底部 显示统计数据(如金额)
+        tableFooter && tableFooter.map((item) => footer += this.reduceTableTotal(item))
+        if (footer) {
+            otherProps.footer = () => <div>{footer}</div>
+        }
 
         return (
             <StandardTable
