@@ -284,7 +284,7 @@ export function createComponent(
             component = <div><JsonViewer
                 sortKeys
                 style={{ backgroundColor: "white" }}
-                src={ data[key]}
+                src={ data[key]? data[key]: {}}
                 collapseStringsAfterLength={12}
                 displayObjectSize={true}
                 name={null}
