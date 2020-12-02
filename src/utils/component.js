@@ -272,9 +272,12 @@ export function createComponent(
     let component,
         defaultValue = null;
     let options = [];
-
     let props = { ...item.props, ...extraProps };
     let key = item.dataIndex
+    let jsonViewerDefultValue
+    if(item.isArray){
+        jsonViewerDefultValue = []
+    }else jsonViewerDefultValue={}
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
@@ -284,7 +287,7 @@ export function createComponent(
             component = <div><JsonViewer
                 sortKeys
                 style={{ backgroundColor: "white" }}
-                src={ data[key]? data[key]: {}}
+                src={ data[key]? data[key]: jsonViewerDefultValue}
                 collapseStringsAfterLength={12}
                 displayObjectSize={true}
                 name={null}
