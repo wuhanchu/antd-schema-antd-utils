@@ -189,6 +189,9 @@ export function createInput(
                 initialValue =
                     selectValueConvert(item, data[item.dataIndex]) ||
                     getItemDefaultValue(item);
+                if(item.props && item.props.mode=="tags" && !initialValue){
+                    initialValue = []
+                }
                 break;
             case 'DatePicker':
                 initialValue = initialValue
@@ -617,6 +620,9 @@ export function createFilter(form, inSchema, span, data) {
     });
 
     let filter = Object.keys(schema).map(key => {
+        if(schema[key].props && schema[key].props.mode == 'tags'){
+            data=[]
+        }
         return (
             <Col span={schema[key].span || span} key={'filter_' + key}>
                 {createInput.bind(this)(
