@@ -310,8 +310,8 @@ export function createComponent(
                 onDelete={async e => {
                     let obj = {}
                     obj[key] = e.updated_src
+                    props.form.current.setFieldsValue({format: undefined});
                     props.form.current.setFieldsValue(obj);
-
                 }}
                 onAdd={async e => {
                     if (e.new_value === "error") {
@@ -320,7 +320,6 @@ export function createComponent(
                     let obj = {}
                     obj[key] = e.updated_src
                     props.form.current.setFieldsValue(obj);
-
                 }}
                 shouldCollapse={({ src, namespace, type }) => {
                     if (type === "array" && src.indexOf("test") > -1) {
