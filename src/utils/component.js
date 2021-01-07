@@ -290,7 +290,7 @@ export function createComponent(
             component = <div><JsonViewer
                 sortKeys
                 style={{ backgroundColor: "white" }}
-                src={ data[key]? data[key]: jsonViewerDefultValue}
+                src={props.form && props.form.current ? props.form.current.getFieldsValue()[key]? props.form.current.getFieldsValue()[key]: jsonViewerDefultValue: data[key]?data[key]: jsonViewerDefultValue}
                 collapseStringsAfterLength={12}
                 displayObjectSize={true}
                 name={null}
@@ -306,6 +306,8 @@ export function createComponent(
                     obj[key] = e.updated_src
                     console.log(props)
                     props.form.current.setFieldsValue(obj);
+                    console.log(props.form.current.getFieldsValue())
+
                 }}
                 onDelete={async e => {
                     let obj = {}
@@ -320,6 +322,7 @@ export function createComponent(
                     let obj = {}
                     obj[key] = e.updated_src
                     props.form.current.setFieldsValue(obj);
+                    console.log(props.form.current.getFieldsValue())
                 }}
                 shouldCollapse={({ src, namespace, type }) => {
                     if (type === "array" && src.indexOf("test") > -1) {
