@@ -189,7 +189,7 @@ export function createInput(
                 initialValue =
                     selectValueConvert(item, data[item.dataIndex]) ||
                     getItemDefaultValue(item);
-                if(item.props && item.props.mode=="tags" && !initialValue){
+                if(item.props && item.props.mode==="tags" && !initialValue){
                     initialValue = []
                 }
                 break;
@@ -311,9 +311,16 @@ export function createComponent(
                 }}
                 onDelete={async e => {
                     let obj = {}
+                    let objInit = {}
+                    objInit[key] = undefined
                     obj[key] = e.updated_src
-                    props.form.current.setFieldsValue({format: undefined});
+                    console.log(objInit)
+                    console.log(props.form.current.getFieldsValue())
+
+                    props.form.current.setFieldsValue(objInit);
                     props.form.current.setFieldsValue(obj);
+                    console.log(props.form.current.getFieldsValue())
+
                 }}
                 onAdd={async e => {
                     if (e.new_value === "error") {

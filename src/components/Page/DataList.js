@@ -188,7 +188,7 @@ class DataList extends PureComponent {
             !this.props.readOnly && {
                 title: "操作",
                 width: this.meta.operateWidth,
-                fixed: scroll && "right",
+                fixed: "right",
                 render: (text, record) => (
                     <Fragment>
                         {showEdit && (
