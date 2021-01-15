@@ -10,6 +10,11 @@ import clone from 'clone';
 import { globalStyle } from '../styles/global';
 import moment from 'moment';
 import lodash from 'lodash';
+import BraftEditor from 'braft-editor'
+import { ContentUtils } from 'braft-utils'
+import 'braft-editor/dist/index.css'
+
+
 
 const _ = lodash;
 const SelectOption = Select.Option;
@@ -340,6 +345,26 @@ export function createComponent(
                     return false
                 }}
                 defaultValue=""/></div>
+            break
+        case 'BraftEditor' :
+            console.log("item.lineWidth")
+            console.log(props, data, item)
+            let value = ''
+            value = BraftEditor.createEditorState(data[key])
+            component = <div style={{width: item.lineWidth}}>
+                <BraftEditor  {...props} 
+                    value={value}
+                    onChange={(data)=>{
+                        let obj = {}
+                        obj[key] = data.toHTML()
+                        try {
+                            props.form.current.setFieldsValue(obj);
+                        } catch (error) {
+                            
+                        }
+                    }}
+                />
+                </div>
             break
         case schemaFieldType.Transfer:
             component = (
