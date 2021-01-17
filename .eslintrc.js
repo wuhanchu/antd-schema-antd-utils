@@ -1,18 +1,8 @@
 module.exports = {
-    extends: ["prettier", "prettier/react"],
-    parser: "babel-eslint",
-    plugins: ["prettier"],
-    rules: {},
-    parserOptions: {
-        ecmaVersion: 6,
-        sourceType: "module",
-        ecmaFeatures: {
-            jsx: true
-        }
+    extends: [require.resolve('@umijs/fabric/dist/eslint'), 'prettier', 'prettier/react'],
+    globals: {
+        ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION: true,
+        page: true,
+        REACT_APP_ENV: true,
     },
-
-    env: {
-        browser: true,
-        node: true
-    }
-}
+};
