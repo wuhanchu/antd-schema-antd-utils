@@ -10,6 +10,11 @@ import clone from 'clone';
 import { globalStyle } from '../styles/global';
 import moment from 'moment';
 import lodash from 'lodash';
+import BraftEditor from 'braft-editor'
+import { ContentUtils } from 'braft-utils'
+import 'braft-editor/dist/index.css'
+
+
 
 const _ = lodash;
 const SelectOption = Select.Option;
@@ -189,7 +194,7 @@ export function createInput(
                 initialValue =
                     selectValueConvert(item, data[item.dataIndex]) ||
                     getItemDefaultValue(item);
-                if(item.props && item.props.mode=="tags" && !initialValue){
+                if(item.props && item.props.mode==="tags" && !initialValue){
                     initialValue = []
                 }
                 break;
@@ -311,9 +316,16 @@ export function createComponent(
                 }}
                 onDelete={async e => {
                     let obj = {}
+                    let objInit = {}
+                    objInit[key] = undefined
                     obj[key] = e.updated_src
-                    props.form.current.setFieldsValue({format: undefined});
+                    console.log(objInit)
+                    console.log(props.form.current.getFieldsValue())
+
+                    props.form.current.setFieldsValue(objInit);
                     props.form.current.setFieldsValue(obj);
+                    console.log(props.form.current.getFieldsValue())
+
                 }}
                 onAdd={async e => {
                     if (e.new_value === "error") {
@@ -333,6 +345,26 @@ export function createComponent(
                     return false
                 }}
                 defaultValue=""/></div>
+            break
+        case 'BraftEditor' :
+            console.log("item.lineWidth")
+            console.log(props, data, item)
+            let value = ''
+            value = BraftEditor.createEditorState(data[key])
+            component = <div style={{width: item.lineWidth}}>
+                <BraftEditor  {...props} 
+                    value={value}
+                    onChange={(data)=>{
+                        let obj = {}
+                        obj[key] = data.toHTML()
+                        try {
+                            props.form.current.setFieldsValue(obj);
+                        } catch (error) {
+                            
+                        }
+                    }}
+                />
+                </div>
             break
         case schemaFieldType.Transfer:
             component = (

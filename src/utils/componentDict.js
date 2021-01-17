@@ -13,6 +13,8 @@ import {
     Upload
 } from "antd"
 import JsonViewer from 'react-json-view'
+import BraftEditor from 'braft-editor'
+import 'braft-editor/dist/index.css'
 
 const { TextArea, Password } = Input
 const { Option } = Select
@@ -37,5 +39,6 @@ export default {
     RadioGroup,
     Password,
     Mentions,
-    JsonViewer
+    JsonViewer,
+    BraftEditor
 }
