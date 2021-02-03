@@ -12,8 +12,16 @@ import moment from 'moment';
 import lodash from 'lodash';
 import BraftEditor from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
-import 'braft-editor/dist/index.css'
+import AceEditor from "react-ace";
 
+
+import 'braft-editor/dist/index.css'
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/mode-json";
+
+// import 'brace/mode/json';//
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/ext-language_tools"
 
 
 const _ = lodash;
@@ -125,6 +133,24 @@ function fieldToColumn(key, item) {
     return addItem;
 }
 
+export const verifyJson = [
+    ({ getFieldValue }) => ({
+      validator(_, value) {
+        console.log(value)
+        try {
+            if(value===''){
+                return Promise.resolve();
+            }
+            if(typeof(value)!=='object'){
+                JSON.parse(value)
+            }
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject('请检查JSON格式是否正确！');   
+        }
+      },
+    }),
+  ]
 /**
  * create the input0
  * @param item schema的field 属性
@@ -346,26 +372,59 @@ export function createComponent(
                 }}
                 defaultValue=""/></div>
             break
-        case 'BraftEditor' :
-            console.log("item.lineWidth")
-            console.log(props, data, item)
-            let value = ''
-            value = BraftEditor.createEditorState(data[key])
+        case 'AceEditor' :
             component = <div style={{width: item.lineWidth}}>
-                <BraftEditor  {...props} 
-                    value={value}
-                    onChange={(data)=>{
+                <AceEditor
+                    placeholder={"请输入"+item.title}
+                    mode="json"
+                    theme="tomorrow"
+                    name="blah2"
+                    onChange={(res)=>{
                         let obj = {}
-                        obj[key] = data.toHTML()
+                        obj[key] =res
                         try {
                             props.form.current.setFieldsValue(obj);
                         } catch (error) {
                             
                         }
                     }}
-                />
+                    fontSize={14}
+                    showPrintMargin={true}
+                    showGutter={true}
+                    width={'300px'}
+                    height={'150px'}
+                    highlightActiveLine={true}
+                    value={data[key]? JSON.stringify(data[key],null, '\t'): ''}
+                    markers={[{ startRow: 0, startCol: 2, endRow: 1, endCol: 20, className: 'error-marker', type: 'background' }]}
+                    setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true,
+                        showLineNumbers: true,
+                        tabSize: 2,
+                    }}/>
                 </div>
             break
+            case 'BraftEditor' :
+                console.log("item.lineWidth")
+                console.log(props, data, item)
+                let value = ''
+                value = BraftEditor.createEditorState(data[key])
+                component = <div style={{width: item.lineWidth}}>
+                    <BraftEditor  {...props} 
+                        value={value}
+                        onChange={(data)=>{
+                            let obj = {}
+                            obj[key] = data.toHTML()
+                            try {
+                                props.form.current.setFieldsValue(obj);
+                            } catch (error) {
+                                
+                            }
+                        }}
+                    />
+                    </div>
+                break
         case schemaFieldType.Transfer:
             component = (
                 <Transfer
