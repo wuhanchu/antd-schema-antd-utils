@@ -138,7 +138,7 @@ export const verifyJson = [
       validator(_, value) {
         console.log(value)
         try {
-            if(value===''){
+            if(!value){
                 return Promise.resolve();
             }
             if(typeof(value)!=='object'){
@@ -373,6 +373,18 @@ export function createComponent(
                 defaultValue=""/></div>
             break
         case 'AceEditor' :
+            let AceEditorValue = ''
+            if(data[key]){
+                AceEditorValue = JSON.stringify(data[key],null, '\t')
+            }
+            if(props.form && props.form.current && props.form.current.getFieldsValue()[key]){
+                if(typeof(props.form.current.getFieldsValue()[key])==='object'){
+                    AceEditorValue = JSON.stringify(props.form.current.getFieldsValue()[key],null, '\t')
+                }else{
+                    AceEditorValue = props.form.current.getFieldsValue()[key]
+                }
+            }
+            console.log(AceEditorValue)
             component = <div style={{width: item.lineWidth}}>
                 <AceEditor
                     placeholder={"请输入"+item.title}
@@ -394,7 +406,7 @@ export function createComponent(
                     width={'300px'}
                     height={'150px'}
                     highlightActiveLine={true}
-                    value={data[key]? JSON.stringify(data[key],null, '\t'): ''}
+                    value={AceEditorValue}
                     markers={[{ startRow: 0, startCol: 2, endRow: 1, endCol: 20, className: 'error-marker', type: 'background' }]}
                     setOptions={{
                         enableBasicAutocompletion: true,
