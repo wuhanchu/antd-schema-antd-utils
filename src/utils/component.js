@@ -404,7 +404,8 @@ export function createComponent(
                     showPrintMargin={true}
                     showGutter={true}
                     width={'300px'}
-                    height={'150px'}
+                    height={props.height? props.height: '150px'}
+                    {...props}
                     highlightActiveLine={true}
                     value={AceEditorValue}
                     markers={[{ startRow: 0, startCol: 2, endRow: 1, endCol: 20, className: 'error-marker', type: 'background' }]}
@@ -884,7 +885,8 @@ function renderInputList(list, colNum) {
         ) {
             push = true;
         }
-
+        console.log('colNum')
+        console.log(colNum)
         if (push || tempMum >= colNum || index === list.length - 1) {
             itemList.push(
                 <Row key={`tempList_${index}`}>
