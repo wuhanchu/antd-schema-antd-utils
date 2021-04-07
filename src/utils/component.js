@@ -405,7 +405,6 @@ export function createComponent(
                     showGutter={true}
                     width={'300px'}
                     height={props.height? props.height: '150px'}
-                    {...props}
                     highlightActiveLine={true}
                     value={AceEditorValue}
                     markers={[{ startRow: 0, startCol: 2, endRow: 1, endCol: 20, className: 'error-marker', type: 'background' }]}
