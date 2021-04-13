@@ -110,9 +110,9 @@ export class PureInfoModal extends PureComponent {
                 }
 
                 if (action === actions.edit) {
-                    await handleUpdate(param)
+                    await handleUpdate(param, this.schema)
                 } else {
-                    await handleAdd(param)
+                    await handleAdd(param, this.schema)
                 }
             })
             .catch(err => {
