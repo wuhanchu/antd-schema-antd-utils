@@ -1,35 +1,47 @@
 import React, { Fragment } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import '@ant-design/compatible/assets/index.css';
-import { Avatar, Button, Col, Divider, Form, Mentions, Row, Select, Tabs, Tooltip, Transfer, Upload } from 'antd';
-import JsonViewer from 'react-json-view'
-import dictComponents from './componentDict';
+import {
+    Avatar,
+    Button,
+    Col,
+    Divider,
+    Form,
+    Mentions,
+    Row,
+    Select,
+    Tabs,
+    Tooltip,
+    Transfer,
+    Upload,
+    Modal,
+} from 'antd';
+import JsonViewer from 'react-json-view';
 import frSchema from '@/outter/fr-schema/src';
-import styles from '../styles/basic.less';
 import clone from 'clone';
-import { globalStyle } from '../styles/global';
 import moment from 'moment';
 import lodash from 'lodash';
-import BraftEditor from 'braft-editor'
-import { ContentUtils } from 'braft-utils'
-import AceEditor from "react-ace";
+import BraftEditor from 'braft-editor';
+import { ContentUtils } from 'braft-utils';
+import AceEditor from 'react-ace';
+import { globalStyle } from '../styles/global';
+import styles from '../styles/basic.less';
+import dictComponents from './componentDict';
 
-
-import 'braft-editor/dist/index.css'
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/mode-json";
+import 'braft-editor/dist/index.css';
+import 'ace-builds/src-noconflict/mode-java';
+import 'ace-builds/src-noconflict/mode-json';
 
 // import 'brace/mode/json';//
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/ext-language_tools"
-
+import 'ace-builds/src-noconflict/theme-github';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 const _ = lodash;
 const SelectOption = Select.Option;
 const MentionsOption = Mentions.Option;
 
 const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
+const { TabPane } = Tabs;
 
 const { actions, dict, schemaFieldType } = frSchema;
 
@@ -39,26 +51,21 @@ const { actions, dict, schemaFieldType } = frSchema;
  * @returns {Array}
  */
 export function getListColumn(schema, fieldConfList) {
-    let oneRow = [];
+    const oneRow = [];
     Object.keys(schema)
         .sort((a, b) => {
             return (
-                (schema[a].orderIndex === undefined ||
-                schema[a].orderIndex === null
+                (schema[a].orderIndex === undefined || schema[a].orderIndex === null
                     ? 9999
                     : schema[a].orderIndex) -
-                (schema[b].orderIndex === undefined ||
-                schema[b].orderIndex === null
+                (schema[b].orderIndex === undefined || schema[b].orderIndex === null
                     ? 9999
                     : schema[b].orderIndex)
             );
         })
         .forEach((key, index) => {
             const item = schema[key];
-            if (
-                item.listHide ||
-                (fieldConfList && !fieldConfList.includes(key))
-            ) {
+            if (item.listHide || (fieldConfList && !fieldConfList.includes(key))) {
                 return;
             }
 
@@ -75,8 +82,8 @@ export function getListColumn(schema, fieldConfList) {
  * @returns {Array}
  */
 export function getExportColumn(schema, fieldConfList) {
-    let oneRow = [];
-    Object.keys(schema).forEach(key => {
+    const oneRow = [];
+    Object.keys(schema).forEach((key) => {
         const item = schema[key];
         if (item.addHide || (fieldConfList && !fieldConfList.includes(key))) {
             return;
@@ -101,18 +108,15 @@ function fieldToColumn(key, item) {
         ...item,
         key,
         dataIndex:
-            item.dict ||
-            item.type === 'DatePicker' ||
-            item.type === 'Select' ||
-            item.unit
-                ? key + '_remark'
+            item.dict || item.type === 'DatePicker' || item.type === 'Select' || item.unit
+                ? `${key}_remark`
                 : key,
         render:
             item.render ||
-            (value => {
+            ((value) => {
                 switch (item.type) {
                     case 'Avatar':
-                        return <Avatar src={value}/>;
+                        return <Avatar src={value} />;
                     default:
                         return (
                             <div
@@ -135,22 +139,22 @@ function fieldToColumn(key, item) {
 
 export const verifyJson = [
     ({ getFieldValue }) => ({
-      validator(_, value) {
-        console.log(value)
-        try {
-            if(!value){
+        validator(_, value) {
+            console.log(value);
+            try {
+                if (!value) {
+                    return Promise.resolve();
+                }
+                if (typeof value !== 'object') {
+                    JSON.parse(value);
+                }
                 return Promise.resolve();
+            } catch (error) {
+                return Promise.reject('请检查JSON格式是否正确！');
             }
-            if(typeof(value)!=='object'){
-                JSON.parse(value)
-            }
-            return Promise.resolve();
-        } catch (error) {
-            return Promise.reject('请检查JSON格式是否正确！');   
-        }
-      },
+        },
     }),
-  ]
+];
 /**
  * create the input0
  * @param item schema的field 属性
@@ -162,38 +166,25 @@ export const verifyJson = [
  * colNum 一行有几个字段
  * @returns {*}
  */
-export function createInput(
-    item,
-    data,
-    form,
-    action = actions.add,
-    itemProps = {},
-    colNum = 1,
-) {
-    let type = item.type;
+export function createInput(item, data, form, action = actions.add, itemProps = {}, colNum = 1) {
+    let { type } = item;
     if (!type) {
-        type = "Input"
+        type = 'Input';
     }
 
     // component props
     let props = {
         form,
-        readOnly:
-            action === actions.show ||
-            (action === actions.edit && item.readOnly),
-        disabled:
-            action === actions.show ||
-            (action === actions.edit && item.readOnly),
+        readOnly: action === actions.show || (action === actions.edit && item.readOnly),
+        disabled: action === actions.show || (action === actions.edit && item.readOnly),
         onChange: function (event) {
-            const value =
-                event && event.currentTarget? event.currentTarget.value : event;
+            const value = event && event.currentTarget ? event.currentTarget.value : event;
             if (this && this.state && this.setState && this.state.data) {
-                let data = { ...this.state.data };
+                const data = { ...this.state.data };
                 data[item.dataIndex] = value;
                 this.setState({ data });
             }
-            item.onChange &&
-            item.onChange.bind(this)(value, this && this.state, form);
+            item.onChange && item.onChange.bind(this)(value, this && this.state, form);
         }.bind(this),
         ...item.props,
     };
@@ -202,12 +193,11 @@ export function createInput(
     let component = null;
     let decoratorProps = {};
 
-    let defaultWidth =
-        (globalStyle.form.input.width*(colNum > 3? 3 : colNum))/colNum;
+    const defaultWidth = (globalStyle.form.input.width * (colNum > 3 ? 3 : colNum)) / colNum;
 
     props = {
         style: item.style || { width: defaultWidth },
-        placeholder: !props.readOnly? `请输入${item.title}` : null,
+        placeholder: !props.readOnly ? `请输入${item.title}` : null,
         ...props,
     };
 
@@ -218,22 +208,19 @@ export function createInput(
             case 'MultiSelect':
             case 'Select':
                 initialValue =
-                    selectValueConvert(item, data[item.dataIndex]) ||
-                    getItemDefaultValue(item);
-                if(item.props && item.props.mode==="tags" && !initialValue){
-                    initialValue = []
+                    selectValueConvert(item, data[item.dataIndex]) || getItemDefaultValue(item);
+                if (item.props && item.props.mode === 'tags' && !initialValue) {
+                    initialValue = [];
                 }
                 break;
             case 'DatePicker':
-                initialValue = initialValue
-                    ? moment(initialValue, moment.ISO_8601)
-                    : null;
+                initialValue = initialValue ? moment(initialValue, moment.ISO_8601) : null;
                 break;
         }
         if (!form) {
             props.value = initialValue;
         } else {
-            itemProps.initialValue = initialValue
+            itemProps.initialValue = initialValue;
         }
     }
 
@@ -244,35 +231,25 @@ export function createInput(
     }
 
     if (item.renderInput) {
-        component = item.renderInput.bind(this)(
-            item,
-            form? tempData : null,
-            props,
-            action,
-        );
+        component = item.renderInput.bind(this)(item, form ? tempData : null, props, action);
     } else {
         component = createComponent.bind(this)(
             item,
-            form? tempData : null,
+            form ? tempData : null,
             props,
             action,
             defaultWidth,
         );
     }
 
-    //创建
+    // 创建
     decoratorProps = convertDecoratorProps(item);
-    return !this ||
-    !this.state ||
-    !item.infoShowFunc ||
-    item.infoShowFunc(this.state.data)? (
+    return !this || !this.state || !item.infoShowFunc || item.infoShowFunc(this.state.data) ? (
         <Tooltip placement="top" title={item.tip}>
             <FormItem
                 key={item.dataIndex}
                 name={item.dataIndex}
-                label={
-                    item.title + (item.unit? '(' + item.unit + ')' : '')
-                }
+                label={item.title + (item.unit ? `(${item.unit})` : '')}
                 rules={decoratorProps.rules}
                 extra={item.extra}
                 {...itemProps}
@@ -299,149 +276,201 @@ export function createComponent(
     action = actions.add,
     defaultWidth = 200,
 ) {
-    let type = item.type;
+    let { type } = item;
     if (!type) {
-        type = "Input"
+        type = 'Input';
     }
-    let component,
-        defaultValue = null;
-    let options = [];
-    let props = { ...item.props, ...extraProps };
-    let key = item.dataIndex
-    let jsonViewerDefultValue
-    if(item.isArray){
-        jsonViewerDefultValue = []
-    }else jsonViewerDefultValue={}
+    let component;
+    let defaultValue = null;
+    const options = [];
+    const props = { ...item.props, ...extraProps };
+    const key = item.dataIndex;
+    let jsonViewerDefultValue;
+    if (item.isArray) {
+        jsonViewerDefultValue = [];
+    } else jsonViewerDefultValue = {};
     switch (type) {
         case 'Avatar':
             component = <Avatar {...props} />;
             break;
 
-        case 'JsonViewer' :
-            component = <div><JsonViewer
-                sortKeys
-                style={{ backgroundColor: "white" }}
-                src={props.form && props.form.current ? props.form.current.getFieldsValue()[key]? props.form.current.getFieldsValue()[key]: jsonViewerDefultValue: data[key]?data[key]: jsonViewerDefultValue}
-                collapseStringsAfterLength={12}
-                displayObjectSize={true}
-                name={null}
-                enableClipboard={copy => {
-                    console.log("you copied to clipboard!", copy)
-                }}
-                onEdit={async e => {
-                    if (e.new_value === "error") {
-                        return false
-                    }
+        case 'JsonViewer':
+            component = (
+                <div>
+                    <JsonViewer
+                        sortKeys
+                        style={{ backgroundColor: 'white' }}
+                        src={
+                            props.form && props.form.current
+                                ? props.form.current.getFieldsValue()[key]
+                                    ? props.form.current.getFieldsValue()[key]
+                                    : jsonViewerDefultValue
+                                : data[key]
+                                ? data[key]
+                                : jsonViewerDefultValue
+                        }
+                        collapseStringsAfterLength={12}
+                        displayObjectSize
+                        name={null}
+                        enableClipboard={(copy) => {
+                            console.log('you copied to clipboard!', copy);
+                        }}
+                        onEdit={async (e) => {
+                            if (e.new_value === 'error') {
+                                return false;
+                            }
 
-                    let obj = {}
-                    obj[key] = e.updated_src
-                    console.log(props)
-                    props.form.current.setFieldsValue(obj);
-                    console.log(props.form.current.getFieldsValue())
-
-                }}
-                onDelete={async e => {
-                    let obj = {}
-                    let objInit = {}
-                    objInit[key] = undefined
-                    obj[key] = e.updated_src
-                    console.log(objInit)
-                    console.log(props.form.current.getFieldsValue())
-
-                    props.form.current.setFieldsValue(objInit);
-                    props.form.current.setFieldsValue(obj);
-                    console.log(props.form.current.getFieldsValue())
-
-                }}
-                onAdd={async e => {
-                    if (e.new_value === "error") {
-                        return false
-                    }
-                    let obj = {}
-                    obj[key] = e.updated_src
-                    props.form.current.setFieldsValue(obj);
-                    console.log(props.form.current.getFieldsValue())
-                }}
-                shouldCollapse={({ src, namespace, type }) => {
-                    if (type === "array" && src.indexOf("test") > -1) {
-                        return true
-                    } else if (namespace.indexOf("moment") > -1) {
-                        return true
-                    }
-                    return false
-                }}
-                defaultValue=""/></div>
-            break
-        case 'AceEditor' :
-            let AceEditorValue = ''
-            if(data[key]){
-                AceEditorValue = JSON.stringify(data[key],null, '\t')
+                            const obj = {};
+                            obj[key] = e.updated_src;
+                            props.form.current.setFieldsValue(obj);
+                        }}
+                        onDelete={async (e) => {
+                            const obj = {};
+                            const objInit = {};
+                            objInit[key] = undefined;
+                            obj[key] = e.updated_src;
+                            props.form.current.setFieldsValue(objInit);
+                            props.form.current.setFieldsValue(obj);
+                        }}
+                        onAdd={async (e) => {
+                            if (e.new_value === 'error') {
+                                return false;
+                            }
+                            const obj = {};
+                            obj[key] = e.updated_src;
+                            props.form.current.setFieldsValue(obj);
+                            console.log(props.form.current.getFieldsValue());
+                        }}
+                        shouldCollapse={({ src, namespace, type }) => {
+                            if (type === 'array' && src.indexOf('test') > -1) {
+                                return true;
+                            }
+                            if (namespace.indexOf('moment') > -1) {
+                                return true;
+                            }
+                            return false;
+                        }}
+                        defaultValue=""
+                    />
+                </div>
+            );
+            break;
+        case 'AceEditor':
+            let AceEditorValue = '';
+            if (data[key]) {
+                AceEditorValue = JSON.stringify(data[key], null, '\t');
             }
-            if(props.form && props.form.current && props.form.current.getFieldsValue()[key]){
-                if(typeof(props.form.current.getFieldsValue()[key])==='object'){
-                    AceEditorValue = JSON.stringify(props.form.current.getFieldsValue()[key],null, '\t')
-                }else{
-                    AceEditorValue = props.form.current.getFieldsValue()[key]
+            if (props.form && props.form.current && props.form.current.getFieldsValue()[key]) {
+                if (typeof props.form.current.getFieldsValue()[key] === 'object') {
+                    AceEditorValue = JSON.stringify(
+                        props.form.current.getFieldsValue()[key],
+                        null,
+                        '\t',
+                    );
+                } else {
+                    AceEditorValue = props.form.current.getFieldsValue()[key];
                 }
             }
-            console.log(AceEditorValue)
-            component = <div style={{width: item.lineWidth}}>
-                <AceEditor
-                    placeholder={"请输入"+item.title}
-                    mode="json"
-                    theme="tomorrow"
-                    name="blah2"
-                    onChange={(res)=>{
-                        let obj = {}
-                        obj[key] =res
-                        try {
-                            props.form.current.setFieldsValue(obj);
-                        } catch (error) {
-                            
-                        }
-                    }}
-                    fontSize={14}
-                    showPrintMargin={true}
-                    showGutter={true}
-                    width={'300px'}
-                    height={props.height? props.height: '150px'}
-                    highlightActiveLine={true}
-                    value={AceEditorValue}
-                    markers={[{ startRow: 0, startCol: 2, endRow: 1, endCol: 20, className: 'error-marker', type: 'background' }]}
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: true,
-                        showLineNumbers: true,
-                        tabSize: 2,
-                    }}/>
-                </div>
-            break
-            case 'BraftEditor' :
-                console.log("item.lineWidth")
-                console.log(props, data, item)
-                let value = ''
-                value = BraftEditor.createEditorState(data[key])
-                component = <div style={{width: item.lineWidth}}>
-                    <BraftEditor  {...props} 
-                        value={value}
-                        onChange={(data)=>{
-                            let obj = {}
-                            obj[key] = data.toHTML()
+            console.log(AceEditorValue);
+            component = (
+                <div style={{ width: item.lineWidth }}>
+                    <AceEditor
+                        placeholder={`请输入${item.title}`}
+                        mode="json"
+                        theme="tomorrow"
+                        name="blah2"
+                        onChange={(res) => {
+                            const obj = {};
+                            obj[key] = res;
                             try {
                                 props.form.current.setFieldsValue(obj);
-                            } catch (error) {
-                                
-                            }
+                            } catch (error) {}
+                        }}
+                        fontSize={14}
+                        showPrintMargin
+                        showGutter
+                        width={props.width ? props.width : '300px'}
+                        style={props.style}
+                        height={props.height ? props.height : '150px'}
+                        highlightActiveLine
+                        value={AceEditorValue}
+                        markers={[
+                            {
+                                startRow: 0,
+                                startCol: 2,
+                                endRow: 1,
+                                endCol: 20,
+                                className: 'error-marker',
+                                type: 'background',
+                            },
+                        ]}
+                        setOptions={{
+                            enableBasicAutocompletion: true,
+                            enableLiveAutocompletion: true,
+                            enableSnippets: true,
+                            showLineNumbers: true,
+                            tabSize: 2,
                         }}
                     />
-                    </div>
-                break
+                </div>
+            );
+            break;
+        case 'BraftEditor':
+            let value = '';
+            value = BraftEditor.createEditorState(data[key]);
+            component = (
+                <Button
+                    onClick={() => {
+                        Modal.info({
+                            title: '答案编辑',
+                            // icon: <ExclamationCircleOutlined />,
+                            width: props.wrapperWidth ? props.wrapperWidth : '800px',
+                            content: (
+                                <div>
+                                    <div style={{width: '100%', height: '1px'}}/>
+                                    <div style={props.wrapperStyle}>
+                                        <BraftEditor
+                                            {...props}
+                                            value={value}
+                                            onChange={(data) => {
+                                                const obj = {};
+                                                obj[key] = data.toHTML();
+                                                try {
+                                                    props.form.current.setFieldsValue(obj);
+                                                } catch (error) {}
+                                            }}
+                                        />
+                                    </div>
+
+                                </div>
+                            ),
+                            okText: '确认',
+                            // cancelText: '取消',
+                        });
+                    }}
+                >
+                    点击编辑
+                </Button>
+                // <div style={{ width: item.lineWidth }}>
+                //     <BraftEditor
+                //         {...props}
+                //         value={value}
+                //         onChange={(data) => {
+                //             const obj = {};
+                //             obj[key] = data.toHTML();
+                //             try {
+                //                 props.form.current.setFieldsValue(obj);
+                //             } catch (error) {}
+                //         }}
+                //     />
+                // </div>
+            );
+            break;
         case schemaFieldType.Transfer:
             component = (
                 <Transfer
                     targetKeys={data}
-                    render={item => item.name}
+                    render={(item) => item.name}
                     showSearch
                     {...props}
                     onChange={(targetKeys, direction, moveKeys) => {
@@ -453,75 +482,72 @@ export function createComponent(
         case 'MultiSelect':
             const mode = 'multiple';
 
-            //default value
+            // default value
             if (action === actions.add) {
-                Object.values(item.dict).forEach(dictItem => {
+                Object.values(item.dict).forEach((dictItem) => {
                     defaultValue = getItemDefaultValue(item);
                 });
             }
         case 'Select':
-            //default value
+            // default value
             if (!defaultValue && action === actions.add && item.dict) {
-                Object.values(item.dict).some(dictItem => {
+                Object.values(item.dict).some((dictItem) => {
                     defaultValue = getItemDefaultValue(item);
                 });
             }
 
             // options
             item.dict &&
-            Object.values(item.dict).forEach(
-                function (dictItem) {
-                    //check the dict Whether it matches
-                    if (
-                        dictItem.condition &&
-                        (action === actions.add || action === actions.edit)
-                    ) {
-                        if (dictItem.condition instanceof Function) {
-                            if (!dictItem.condition(this.state.data)) {
+                Object.values(item.dict).forEach(
+                    function (dictItem) {
+                        // check the dict Whether it matches
+                        if (
+                            dictItem.condition &&
+                            (action === actions.add || action === actions.edit)
+                        ) {
+                            if (dictItem.condition instanceof Function) {
+                                if (!dictItem.condition(this.state.data)) {
+                                    return;
+                                }
+                            } else if (
+                                Object.keys(dictItem.condition).some(
+                                    function (key) {
+                                        return (
+                                            !this ||
+                                            !this.state ||
+                                            !this.state.data ||
+                                            this.state.data[key] !== dictItem.condition[key]
+                                        );
+                                    }.bind(this),
+                                )
+                            ) {
                                 return;
                             }
-                        } else if (
-                            Object.keys(dictItem.condition).some(
-                                function (key) {
-                                    return (
-                                        !this ||
-                                        !this.state ||
-                                        !this.state.data ||
-                                        this.state.data[key] !==
-                                        dictItem.condition[key]
-                                    );
-                                }.bind(this),
-                            )
-                        ) {
-                            return;
                         }
-                    }
 
-                    // add to options
-                    return options.push(
-                        <SelectOption
-                            key={dictItem.value}
-                            title={dictItem.title}
-                            value={dictItem.value}
-                        >
-                            {dictItem.remark}
-                        </SelectOption>,
-                    );
-                }.bind(this),
-            );
+                        // add to options
+                        return options.push(
+                            <SelectOption
+                                key={dictItem.value}
+                                title={dictItem.title}
+                                value={dictItem.value}
+                            >
+                                {dictItem.remark}
+                            </SelectOption>,
+                        );
+                    }.bind(this),
+                );
 
             // judge whether show search
             const searchOptions =
                 options.length > 10
                     ? {
-                        showSearch: true,
-                        optionFilterProp: 'children',
-                        filterOption: (input, option) =>
-                            option.props.children.toLowerCase &&
-                            option.props.children
-                                .toLowerCase()
-                                .indexOf(input.toLowerCase()) >= 0,
-                    }
+                          showSearch: true,
+                          optionFilterProp: 'children',
+                          filterOption: (input, option) =>
+                              option.props.children.toLowerCase &&
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0,
+                      }
                     : {};
 
             // create the select
@@ -546,19 +572,14 @@ export function createComponent(
         case dictComponents.Mentions:
             // options
             item.options &&
-            Object.values(item.options).forEach(
-                function (dictItem) {
+                Object.values(item.options).forEach(function (dictItem) {
                     // add to options
                     return options.push(
-                        <MentionsOption
-                            key={dictItem.value}
-                            value={dictItem.value}
-                        >
+                        <MentionsOption key={dictItem.value} value={dictItem.value}>
                             {dictItem.remark}
                         </MentionsOption>,
                     );
-                }.bind(this),
-            );
+                });
 
             // create the components
             component = (
@@ -573,20 +594,20 @@ export function createComponent(
             component = (
                 <Upload
                     multiple={false}
-                    beforeUpload={file => {
+                    beforeUpload={(file) => {
                         return false;
                     }}
                     {...props}
                 >
                     <Button>
-                        <UploadOutlined/> 选择文件
+                        <UploadOutlined /> 选择文件
                     </Button>
                 </Upload>
             );
             break;
 
         case 'RangePicker':
-            let { placeholder, ...others } = props;
+            const { placeholder, ...others } = props;
             component = React.createElement(dictComponents[type], {
                 style: { width: defaultWidth },
                 ...others,
@@ -601,7 +622,7 @@ export function createComponent(
             });
     }
 
-    //return
+    // return
     return component;
 }
 
@@ -632,26 +653,26 @@ function getItemDefaultValue(item) {
     if (item.type == schemaFieldType.MultiSelect) {
         let defaultValue = [];
         item.dict &&
-        Object.values(item.dict).forEach(dictItem => {
-            if (dictItem.default) {
-                defaultValue = defaultValue || [];
-                defaultValue.push(dictItem.value);
-            }
-        });
+            Object.values(item.dict).forEach((dictItem) => {
+                if (dictItem.default) {
+                    defaultValue = defaultValue || [];
+                    defaultValue.push(dictItem.value);
+                }
+            });
 
         return defaultValue || [];
     }
     // 下拉框
-    else if (item.type == schemaFieldType.Select) {
+    if (item.type == schemaFieldType.Select) {
         let defaultValue = null;
         item.dict &&
-        Object.values(item.dict).some(dictItem => {
-            // 在from下的默认值由 form 来传入
-            if (dictItem.default) {
-                defaultValue = dictItem.value;
-                return true;
-            }
-        });
+            Object.values(item.dict).some((dictItem) => {
+                // 在from下的默认值由 form 来传入
+                if (dictItem.default) {
+                    defaultValue = dictItem.value;
+                    return true;
+                }
+            });
 
         return defaultValue;
     }
@@ -669,17 +690,14 @@ function selectValueConvert(item, initialValue) {
         return result;
     }
 
-    if (
-        item.type === schemaFieldType.MultiSelect &&
-        typeof initialValue === 'string'
-    ) {
-        result = initialValue? initialValue.split(',') : [];
+    if (item.type === schemaFieldType.MultiSelect && typeof initialValue === 'string') {
+        result = initialValue ? initialValue.split(',') : [];
         if (
             !_.isEmpty(result) &&
             !_.isEmpty(item.dict) &&
             typeof Object.values(item.dict)[0].value === 'number'
         ) {
-            result = result.map(value => parseInt(value));
+            result = result.map((value) => parseInt(value));
         }
     }
 
@@ -711,25 +729,25 @@ function selectValueConvert(item, initialValue) {
  * @returns {*[]}
  */
 export function createFilter(form, inSchema, span, data) {
-    let schema = clone(inSchema);
-    Object.keys(schema).forEach(key => {
+    const schema = clone(inSchema);
+    Object.keys(schema).forEach((key) => {
         if (!schema[key]) {
             delete schema[key];
             return;
         }
 
         schema[key].dict &&
-        Object.keys(schema[key].dict).forEach(dictItem => {
-            delete schema[key].dict[dictItem].default;
-        });
+            Object.keys(schema[key].dict).forEach((dictItem) => {
+                delete schema[key].dict[dictItem].default;
+            });
     });
 
-    let filter = Object.keys(schema).map(key => {
-        if(schema[key].props && schema[key].props.mode == 'tags'){
-            data=[]
+    const filter = Object.keys(schema).map((key) => {
+        if (schema[key].props && schema[key].props.mode == 'tags') {
+            data = [];
         }
         return (
-            <Col span={schema[key].span || span} key={'filter_' + key}>
+            <Col span={schema[key].span || span} key={`filter_${key}`}>
                 {createInput.bind(this)(
                     {
                         ...schema[key],
@@ -738,9 +756,7 @@ export function createFilter(form, inSchema, span, data) {
                         props: {
                             ...schema[key].props,
                             style: {
-                                ...((schema[key].props &&
-                                    schema[key].props.style) ||
-                                    {}),
+                                ...((schema[key].props && schema[key].props.style) || {}),
                             },
                         },
                     },
@@ -774,9 +790,9 @@ export function createForm(
     let result = null;
 
     // create the from
-    column.forEach(item => {
+    column.forEach((item) => {
         if (!result) {
-            result = item.tabKey? {} : [];
+            result = item.tabKey ? {} : [];
         }
 
         // 修改隐藏 只读
@@ -784,14 +800,7 @@ export function createForm(
             return;
         }
 
-        let component = createInput.bind(this)(
-            item,
-            data,
-            form,
-            action,
-            { style },
-            colNum,
-        );
+        const component = createInput.bind(this)(item, data, form, action, { style }, colNum);
 
         if (result instanceof Array) {
             result.push({ column: item, component });
@@ -802,10 +811,9 @@ export function createForm(
     });
 
     if (result instanceof Array) {
-
         // 清理 null 的数据
-        let initialValues = {};
-        Object.keys(data).forEach(key => {
+        const initialValues = {};
+        Object.keys(data).forEach((key) => {
             if (!_.isNil(data[key])) {
                 initialValues[key] = data[key];
             }
@@ -822,32 +830,25 @@ export function createForm(
                 {renderInputList.bind(this)(result, colNum)}
             </Form>
         );
-    } else {
-        return (
-            <Tabs tabPosition="left">
-                {Object.keys(result).map(listKey => (
-                    <TabPane tab={listKey} key={listKey}>
-                        {result[listKey].length < 10
-                            ? renderInputList.bind(this)(
-                                result[listKey],
-                                colNum,
-                            )
-                            : renderInputList.bind(this)(
-                                result[listKey],
-                                colNum,
-                            )}
-                        {extend[listKey] || null}
-                    </TabPane>
-                ))}
-
-                {Object.keys(otherTabs).map(key => (
-                    <TabPane tab={key} key={key}>
-                        {otherTabs[key]}
-                    </TabPane>
-                ))}
-            </Tabs>
-        );
     }
+    return (
+        <Tabs tabPosition="left">
+            {Object.keys(result).map((listKey) => (
+                <TabPane tab={listKey} key={listKey}>
+                    {result[listKey].length < 10
+                        ? renderInputList.bind(this)(result[listKey], colNum)
+                        : renderInputList.bind(this)(result[listKey], colNum)}
+                    {extend[listKey] || null}
+                </TabPane>
+            ))}
+
+            {Object.keys(otherTabs).map((key) => (
+                <TabPane tab={key} key={key}>
+                    {otherTabs[key]}
+                </TabPane>
+            ))}
+        </Tabs>
+    );
 }
 
 /**
@@ -857,7 +858,7 @@ export function createForm(
  * @returns {Array}
  */
 function renderInputList(list, colNum) {
-    let itemList = [];
+    const itemList = [];
 
     let tempMum = 0;
     let tempList = [];
@@ -870,9 +871,7 @@ function renderInputList(list, colNum) {
         if (index === 0 && item.column.groupName) {
             itemList.push(
                 <Fragment>
-                    <div className={styles.title}>
-                        {list[index + 1].column.groupName}
-                    </div>
+                    <div className={styles.title}>{list[index + 1].column.groupName}</div>
                 </Fragment>,
             );
         }
@@ -884,15 +883,15 @@ function renderInputList(list, colNum) {
         ) {
             push = true;
         }
-        console.log('colNum')
-        console.log(colNum)
+        console.log('colNum');
+        console.log(colNum);
         if (push || tempMum >= colNum || index === list.length - 1) {
             itemList.push(
                 <Row key={`tempList_${index}`}>
                     {tempList.map((tempItem, tempIndex) => (
                         <Col
                             key={`tempList_${index}_${tempIndex}}`}
-                            span={(24/colNum)*(tempItem.column.colNum || 1)}
+                            span={(24 / colNum) * (tempItem.column.colNum || 1)}
                         >
                             {tempItem.component}
                         </Col>
@@ -907,10 +906,8 @@ function renderInputList(list, colNum) {
         if (push) {
             itemList.push(
                 <Fragment>
-                    <Divider style={{ margin: '5px 2px 5px 2px' }}/>
-                    <div className={styles.title}>
-                        {list[index + 1].column.groupName}
-                    </div>
+                    <Divider style={{ margin: '5px 2px 5px 2px' }} />
+                    <div className={styles.title}>{list[index + 1].column.groupName}</div>
                 </Fragment>,
             );
         }
