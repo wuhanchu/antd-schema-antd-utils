@@ -419,51 +419,50 @@ export function createComponent(
             let value = '';
             value = BraftEditor.createEditorState(data[key]);
             component = (
-                <Button
-                    onClick={() => {
-                        Modal.info({
-                            title: '答案编辑',
-                            // icon: <ExclamationCircleOutlined />,
-                            width: props.wrapperWidth ? props.wrapperWidth : '800px',
-                            content: (
-                                <div>
-                                    <div style={{width: '100%', height: '1px'}}/>
-                                    <div style={props.wrapperStyle}>
-                                        <BraftEditor
-                                            {...props}
-                                            value={value}
-                                            onChange={(data) => {
-                                                const obj = {};
-                                                obj[key] = data.toHTML();
-                                                try {
-                                                    props.form.current.setFieldsValue(obj);
-                                                } catch (error) {}
-                                            }}
-                                        />
-                                    </div>
-
-                                </div>
-                            ),
-                            okText: '确认',
-                            // cancelText: '取消',
-                        });
-                    }}
-                >
-                    点击编辑
-                </Button>
-                // <div style={{ width: item.lineWidth }}>
-                //     <BraftEditor
-                //         {...props}
-                //         value={value}
-                //         onChange={(data) => {
-                //             const obj = {};
-                //             obj[key] = data.toHTML();
-                //             try {
-                //                 props.form.current.setFieldsValue(obj);
-                //             } catch (error) {}
-                //         }}
-                //     />
-                // </div>
+                // <Button
+                //     onClick={() => {
+                //         Modal.info({
+                //             title: '答案编辑',
+                //             // icon: <ExclamationCircleOutlined />,
+                //             width: props.wrapperWidth ? props.wrapperWidth : '800px',
+                //             content: (
+                //                 <div>
+                //                     <div style={{ width: '100%', height: '1px' }} />
+                //                     <div style={props.wrapperStyle}>
+                //                         <BraftEditor
+                //                             {...props}
+                //                             value={value}
+                //                             onChange={(data) => {
+                //                                 const obj = {};
+                //                                 obj[key] = data.toHTML();
+                //                                 try {
+                //                                     props.form.current.setFieldsValue(obj);
+                //                                 } catch (error) {}
+                //                             }}
+                //                         />
+                //                     </div>
+                //                 </div>
+                //             ),
+                //             okText: '确认',
+                //             // cancelText: '取消',
+                //         });
+                //     }}
+                // >
+                //     点击编辑
+                // </Button>
+                <div style={{ width: item.lineWidth }}>
+                    <BraftEditor
+                        {...props}
+                        value={value}
+                        onChange={(data) => {
+                            const obj = {};
+                            obj[key] = data.toHTML();
+                            try {
+                                props.form.current.setFieldsValue(obj);
+                            } catch (error) {}
+                        }}
+                    />
+                </div>
             );
             break;
         case schemaFieldType.Transfer:
@@ -788,7 +787,7 @@ export function createForm(
     formProps,
 ) {
     let result = null;
-
+    console.log(formProps);
     // create the from
     column.forEach((item) => {
         if (!result) {
@@ -827,7 +826,7 @@ export function createForm(
                 wrapperCol={globalStyle.form.wrapperCol}
                 {...formProps}
             >
-                {renderInputList.bind(this)(result, colNum)}
+                {renderInputList.bind(this)(result, colNum, formProps)}
             </Form>
         );
     }
@@ -836,8 +835,8 @@ export function createForm(
             {Object.keys(result).map((listKey) => (
                 <TabPane tab={listKey} key={listKey}>
                     {result[listKey].length < 10
-                        ? renderInputList.bind(this)(result[listKey], colNum)
-                        : renderInputList.bind(this)(result[listKey], colNum)}
+                        ? renderInputList.bind(this)(result[listKey], colNum, formProps)
+                        : renderInputList.bind(this)(result[listKey], colNum, formProps)}
                     {extend[listKey] || null}
                 </TabPane>
             ))}
@@ -857,11 +856,14 @@ export function createForm(
  * @param colNum
  * @returns {Array}
  */
-function renderInputList(list, colNum) {
+function renderInputList(list, colNum, formProps) {
     const itemList = [];
 
     let tempMum = 0;
     let tempList = [];
+    const itemListLeft = [];
+    const itemListRight = [];
+
     list.forEach((item, index) => {
         tempMum += item.column.colNum || 1;
         tempList.push(item);
@@ -886,19 +888,51 @@ function renderInputList(list, colNum) {
         console.log('colNum');
         console.log(colNum);
         if (push || tempMum >= colNum || index === list.length - 1) {
-            itemList.push(
-                <Row key={`tempList_${index}`}>
-                    {tempList.map((tempItem, tempIndex) => (
-                        <Col
-                            key={`tempList_${index}_${tempIndex}}`}
-                            span={(24 / colNum) * (tempItem.column.colNum || 1)}
-                        >
-                            {tempItem.component}
-                        </Col>
-                    ))}
-                </Row>,
-            );
+            if (formProps.isCustomize) {
+                // if(item.column.)
+                if (item.column.position === 'right') {
+                    itemListRight.push(
+                        <Row key={`tempList_${index}`}>
+                            {tempList.map((tempItem, tempIndex) => (
+                                <Col
+                                    key={`tempList_${index}_${tempIndex}}`}
+                                    span={(24 / colNum) * (tempItem.column.colNum || 1)}
+                                >
+                                    {tempItem.component}
+                                </Col>
+                            ))}
+                        </Row>,
+                    );
+                } else {
+                    itemListLeft.push(
+                        <Row key={`tempList_${index}`}>
+                            {tempList.map((tempItem, tempIndex) => (
+                                <Col
+                                    key={`tempList_${index}_${tempIndex}}`}
+                                    span={(24 / colNum) * (tempItem.column.colNum || 1)}
+                                >
+                                    {tempItem.component}
+                                </Col>
+                            ))}
+                        </Row>,
+                    );
+                }
+            } else {
+                itemList.push(
+                    <Row key={`tempList_${index}`}>
+                        {tempList.map((tempItem, tempIndex) => (
+                            <Col
+                                key={`tempList_${index}_${tempIndex}}`}
+                                span={(24 / colNum) * (tempItem.column.colNum || 1)}
+                            >
+                                {tempItem.component}
+                            </Col>
+                        ))}
+                    </Row>,
+                );
+            }
 
+            console.log(itemList);
             tempMum = 0;
             tempList = [];
         }
@@ -913,5 +947,18 @@ function renderInputList(list, colNum) {
         }
     });
 
+    console.log('结果');
+    console.log(itemList);
+    console.log(itemListLeft);
+    console.log(itemListRight);
+
+    if (formProps.isCustomize) {
+        return (
+            <Row gutter={24}>
+                <Col lg={12}>{itemListLeft}</Col>
+                <Col lg={12}>{itemListRight}</Col>
+            </Row>
+        );
+    }
     return itemList;
 }
