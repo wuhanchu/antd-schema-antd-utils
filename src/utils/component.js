@@ -787,7 +787,6 @@ export function createForm(
     formProps,
 ) {
     let result = null;
-    console.log(formProps);
     // create the from
     column.forEach((item) => {
         if (!result) {
@@ -885,8 +884,6 @@ function renderInputList(list, colNum, formProps) {
         ) {
             push = true;
         }
-        console.log('colNum');
-        console.log(colNum);
         if (push || tempMum >= colNum || index === list.length - 1) {
             if (formProps.isCustomize) {
                 // if(item.column.)
@@ -931,8 +928,6 @@ function renderInputList(list, colNum, formProps) {
                     </Row>,
                 );
             }
-
-            console.log(itemList);
             tempMum = 0;
             tempList = [];
         }
@@ -947,16 +942,11 @@ function renderInputList(list, colNum, formProps) {
         }
     });
 
-    console.log('结果');
-    console.log(itemList);
-    console.log(itemListLeft);
-    console.log(itemListRight);
-
     if (formProps.isCustomize) {
         return (
             <Row gutter={24}>
-                <Col lg={12}>{itemListLeft}</Col>
-                <Col lg={12}>{itemListRight}</Col>
+                <Col lg={formProps.customize.left || 12}>{itemListLeft}</Col>
+                <Col lg={formProps.customize.right || 12}>{itemListRight}</Col>
             </Row>
         );
     }
