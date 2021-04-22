@@ -371,7 +371,6 @@ export function createComponent(
                     AceEditorValue = props.form.current.getFieldsValue()[key];
                 }
             }
-            console.log(AceEditorValue);
             component = (
                 <div style={{ width: item.lineWidth }}>
                     <AceEditor
@@ -418,38 +417,10 @@ export function createComponent(
         case 'BraftEditor':
             let value = '';
             value = BraftEditor.createEditorState(data[key]);
+            if (props.form && props.form.current && props.form.current.getFieldsValue()[key]) {
+                value = BraftEditor.createEditorState(props.form.current.getFieldsValue()[key]);
+            }
             component = (
-                // <Button
-                //     onClick={() => {
-                //         Modal.info({
-                //             title: '答案编辑',
-                //             // icon: <ExclamationCircleOutlined />,
-                //             width: props.wrapperWidth ? props.wrapperWidth : '800px',
-                //             content: (
-                //                 <div>
-                //                     <div style={{ width: '100%', height: '1px' }} />
-                //                     <div style={props.wrapperStyle}>
-                //                         <BraftEditor
-                //                             {...props}
-                //                             value={value}
-                //                             onChange={(data) => {
-                //                                 const obj = {};
-                //                                 obj[key] = data.toHTML();
-                //                                 try {
-                //                                     props.form.current.setFieldsValue(obj);
-                //                                 } catch (error) {}
-                //                             }}
-                //                         />
-                //                     </div>
-                //                 </div>
-                //             ),
-                //             okText: '确认',
-                //             // cancelText: '取消',
-                //         });
-                //     }}
-                // >
-                //     点击编辑
-                // </Button>
                 <div style={{ width: item.lineWidth }}>
                     <BraftEditor
                         {...props}
