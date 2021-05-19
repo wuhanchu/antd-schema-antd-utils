@@ -14,7 +14,6 @@ import {
     Tooltip,
     Transfer,
     Upload,
-    Modal,
 } from 'antd';
 import JsonViewer from 'react-json-view';
 import frSchema from '@/outter/fr-schema/src';
@@ -22,14 +21,13 @@ import clone from 'clone';
 import moment from 'moment';
 import lodash from 'lodash';
 import BraftEditor from 'braft-editor';
-import { ContentUtils } from 'braft-utils';
 import AceEditor from 'react-ace';
 import { globalStyle } from '../styles/global';
 import styles from '../styles/basic.less';
 import dictComponents from './componentDict';
 
 import 'braft-editor/dist/index.css';
-import 'ace-builds/src-noconflict/mode-java';
+// import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-json';
 
 // import 'brace/mode/json';//
@@ -43,12 +41,12 @@ const MentionsOption = Mentions.Option;
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 
-const { actions, dict, schemaFieldType } = frSchema;
+const { actions, schemaFieldType } = frSchema;
 
 /**
  * get the table column
  * @param schema
- * @returns {Array}
+ * @param fieldConfList {Array}
  */
 export function getListColumn(schema, fieldConfList) {
     const oneRow = [];
@@ -138,9 +136,8 @@ function fieldToColumn(key, item) {
 }
 
 export const verifyJson = [
-    ({ getFieldValue }) => ({
+    () => ({
         validator(_, value) {
-            console.log(value);
             try {
                 if (!value) {
                     return Promise.resolve();
@@ -264,8 +261,8 @@ export function createInput(item, data, form, action = actions.add, itemProps = 
 /**
  * 创建输入控件
  * @param {*} item field 信息
- * @param {*} value 数据
- * @param {*} props 扩展的props
+ * @param {*} data 数据
+ * @param {*} extraProps 扩展的props
  * @param {*} action action操作
  * @param {*} defaultWidth 默认宽度
  */
@@ -312,9 +309,6 @@ export function createComponent(
                         collapseStringsAfterLength={12}
                         displayObjectSize
                         name={null}
-                        enableClipboard={(copy) => {
-                            console.log('you copied to clipboard!', copy);
-                        }}
                         onEdit={async (e) => {
                             if (e.new_value === 'error') {
                                 return false;
@@ -339,7 +333,6 @@ export function createComponent(
                             const obj = {};
                             obj[key] = e.updated_src;
                             props.form.current.setFieldsValue(obj);
-                            console.log(props.form.current.getFieldsValue());
                         }}
                         shouldCollapse={({ src, namespace, type }) => {
                             if (type === 'array' && src.indexOf('test') > -1) {
@@ -378,6 +371,7 @@ export function createComponent(
                         mode="json"
                         theme="tomorrow"
                         name="blah2"
+                        wrapEnabled={true}
                         onChange={(res) => {
                             const obj = {};
                             obj[key] = res;
