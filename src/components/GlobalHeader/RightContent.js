@@ -67,11 +67,11 @@ class GlobalHeaderRight extends React.Component {
                     </Tooltip>
                 )}
                 <Avatar handleChangeShoweditPw={this.handleChangeShoweditPw.bind(this)} />
-                <Modal
+                {this.state.showeditPw&&<Modal
                     title="修改密码"
                     visible={this.state.showeditPw}
                     onCancel={() => {
-                        this.setState({ showeditPw: false });
+                        this.setState({ showeditPw: false, oldValue: "", newValue: '',conValue:"" });
                     }}
                     onOk={async () => {
                         if (
@@ -118,7 +118,7 @@ class GlobalHeaderRight extends React.Component {
                             style={{ width: '300px', height: '32px', marginLeft: '10px' }}
                         />
                     </Row>
-                </Modal>
+                </Modal>}
                 {REACT_APP_ENV && (
                     <span>
                         <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
