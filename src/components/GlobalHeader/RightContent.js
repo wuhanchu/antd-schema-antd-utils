@@ -4,10 +4,10 @@ import service from '@/pages/authority/user/service';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import React from 'react';
 import { connect } from 'umi';
-import Avatar from './AvatarDropdown';
 import styles from '@/components/GlobalHeader/index.less';
+import Avatar from './AvatarDropdown';
 
-const config = SETTING
+const config = SETTING;
 
 const ENVTagColor = {
     dev: 'orange',
@@ -53,17 +53,19 @@ class GlobalHeaderRight extends React.Component {
         }
 
         return (
-            <div className={className} style={{height: '48px'}}>
-                {config.useDocumentation &&<Tooltip title="使用文档">
-                    <a
-                        target="_blank"
-                        href={config.useDocumentation}
-                        rel="noopener noreferrer"
-                        className={styles.action}
-                    >
-                        <QuestionCircleOutlined />
-                    </a>
-                </Tooltip>}
+            <div className={className} style={{ height: '48px' }}>
+                {config.useDocumentation && (
+                    <Tooltip title="使用文档">
+                        <a
+                            target="_blank"
+                            href={config.useDocumentation}
+                            rel="noopener noreferrer"
+                            className={styles.action}
+                        >
+                            <QuestionCircleOutlined />
+                        </a>
+                    </Tooltip>
+                )}
                 <Avatar handleChangeShoweditPw={this.handleChangeShoweditPw.bind(this)} />
                 <Modal
                     title="修改密码"

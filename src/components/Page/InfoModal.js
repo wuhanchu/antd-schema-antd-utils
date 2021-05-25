@@ -42,12 +42,6 @@ export class PureInfoModal extends PureComponent {
         onRef && onRef(this)
     }
 
-    static getDerivedStateFromProps(props, state) {
-        if (state.values !== props.values ) {
-            state.values = {...(props.addArgs || {}), ...(props.values || {})}
-        }
-        return state;
-    }
 
     show = values => {
         const {addArgs} = this.props
