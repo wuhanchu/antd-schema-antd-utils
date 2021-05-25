@@ -42,6 +42,13 @@ export class PureInfoModal extends PureComponent {
         onRef && onRef(this)
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.values !== props.values ) {
+            state.values = {...(props.addArgs || {}), ...(props.values || {})}
+        }
+        return state;
+    }
+
     show = values => {
         const {addArgs} = this.props
 
@@ -128,6 +135,9 @@ export class PureInfoModal extends PureComponent {
      */
     renderForm() {
         const {values} = this.state
+        console.log(this.state)
+        console.log(this.props)
+        console.log(values)
         // 只传入InForm所需参数,避免console报错
         const {
             renderForm,
@@ -139,7 +149,7 @@ export class PureInfoModal extends PureComponent {
             ...otherProps
         } = this.props;
         return renderForm &&
-        typeof renderForm == "function" ? (
+        typeof renderForm === "function" ? (
             renderForm({
                 ...this.props,
                 values

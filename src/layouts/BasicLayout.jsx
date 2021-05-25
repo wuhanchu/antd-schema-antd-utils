@@ -7,7 +7,8 @@ import ProLayout, { DefaultFooter } from "@ant-design/pro-layout"
 import React, { useEffect } from "react"
 import { connect, Link, useIntl } from "umi"
 import { Button, Result } from "antd"
-import RightContent from "@/components/GlobalHeader/RightContent"
+import RightContent from "@/outter/fr-schema-antd-utils/src/components/GlobalHeader/RightContent"
+
 import logo from "@/assets/logo.svg"
 
 import Authorized from "../components/Authorized/Authorized"

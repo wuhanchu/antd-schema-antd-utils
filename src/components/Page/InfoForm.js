@@ -32,7 +32,12 @@ class InfoForm extends PureComponent {
             props.action
         )
     }
-
+    static getDerivedStateFromProps(props, state) {
+        if (state.data !== props.values ) {
+            state.data = props.values || {}
+        }
+        return state;
+    }
     renderContent(data) {
         const { column } = this.state
         const {
