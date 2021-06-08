@@ -59,14 +59,14 @@ class ReportModal extends React.PureComponent {
                 const temp = this.beingIndex;
                 if (manList[index]) {
                     result.push(
-                        <Descriptions.Item label="标注结果">
+                        <Descriptions.Item label="返回文本">
                             {this.decorate(checkStr, manList[index])}
                         </Descriptions.Item>,
                     );
                 }
                 this.beingIndex = temp;
                 result.push(
-                    <Descriptions.Item label="质检结果">
+                    <Descriptions.Item label="对照文本">
                         {this.decorate(checkStr, machineList[index])}
                     </Descriptions.Item>,
                 );
@@ -98,7 +98,7 @@ class ReportModal extends React.PureComponent {
                         onOk();
                     }
                 }}
-                width={840}
+                width={890}
                 onCancel={() => {
                     if (onCancel) {
                         onCancel();
@@ -116,7 +116,8 @@ class ReportModal extends React.PureComponent {
                         <Skeleton />
                     </Spin>
                 ) : (
-                    <div ref={(el) => (this.componentRef = el)}>
+                    <div style={{maxHeight: '500px', overflowY: 'scroll'}} >
+                    <div ref={(el) => (this.componentRef = el)} >
                         <Card bordered={false}>
                             <Descriptions title="基础信息" column={2}>
                                 <Descriptions.Item label="文件">{filePath}</Descriptions.Item>
@@ -145,6 +146,7 @@ class ReportModal extends React.PureComponent {
                                 </Descriptions>
                             )}
                         </Card>
+                    </div>
                     </div>
                 )}
             </Modal>
