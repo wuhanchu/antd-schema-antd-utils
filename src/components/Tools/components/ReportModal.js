@@ -89,7 +89,7 @@ class ReportModal extends React.PureComponent {
 
         return (
             <Modal
-                title="标注结果对比报告"
+                title="对比报告"
                 visible
                 okText="   报告"
                 cancelText="关闭"
