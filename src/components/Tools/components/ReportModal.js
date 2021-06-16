@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Descriptions, Divider, Modal, Skeleton, Spin, Empty } from 'antd';
+import { Button, Card, Descriptions, Divider, Modal, Skeleton, Spin, Empty, Select } from 'antd';
 import ReactToPrint from 'react-to-print';
 
 /**
@@ -16,6 +16,7 @@ class ReportModal extends React.PureComponent {
     }
 
     decorate(checkStr, str) {
+        console.log(checkStr, str);
         const result = [];
 
         for (let i = 0; i < str.length; i++) {
@@ -50,10 +51,6 @@ class ReportModal extends React.PureComponent {
             .replace(/ {2}D/g, ' D');
 
         const result = [];
-        // // return <Empty/>
-        //
-        // if (!machineList || !manList) {
-        // }
         if (machineList) {
             machineList.forEach((item, index) => {
                 const temp = this.beingIndex;
@@ -78,18 +75,20 @@ class ReportModal extends React.PureComponent {
 
     render() {
         const { onOk, onCancel } = this.props;
-        const { report, file_path: filePath } = this.props;
+        let { report, file_path: filePath } = this.props;
+        if (this.state.report) {
+            report = this.state.report;
+        }
 
         const manList = report && report.compare_str_valid.replace(/\*\*/g, '&').match(/.{1,66}/g);
-        // const manList = [];
 
         const machineList =
             report && report.origin_str_valid.replace(/\*\*/g, '&').match(/.{1,66}/g);
-        // [];
 
+        console.log(report, machineList, manList);
         return (
             <Modal
-                title="对比报告"
+                title="标注结果对比报告"
                 visible
                 okText="   报告"
                 cancelText="关闭"
@@ -117,8 +116,33 @@ class ReportModal extends React.PureComponent {
                     </Spin>
                 ) : (
                     <div style={{maxHeight: '500px', overflowY: 'scroll'}} >
-                    <div ref={(el) => (this.componentRef = el)} >
+                    <div ref={(el) => (this.componentRef = el)}>
                         <Card bordered={false}>
+                            {this.props.reportList && this.props.reportList.length && (
+                                <Select
+                                    placeholder={'请选择数据'}
+                                    defaultValue={0}
+                                    style={{ float: 'right' }}
+                                    onChange={(item, data) => {
+                                        this.beingIndex = 0;
+                                        this.setState({
+                                            report: this.props.reportList[item],
+                                        });
+                                    }}
+                                >
+                                    {this.props.reportList.map((item, index) => {
+                                        return (
+                                            <Select.Option value={index}>
+                                                {item.status === 'ready'
+                                                    ? '机转'
+                                                    : item.status === 'marked'
+                                                    ? '标注'
+                                                    : '质检'}
+                                            </Select.Option>
+                                        );
+                                    })}
+                                </Select>
+                            )}
                             <Descriptions title="基础信息" column={2}>
                                 <Descriptions.Item label="文件">{filePath}</Descriptions.Item>
                             </Descriptions>
@@ -146,8 +170,7 @@ class ReportModal extends React.PureComponent {
                                 </Descriptions>
                             )}
                         </Card>
-                    </div>
-                    </div>
+                    </div></div>
                 )}
             </Modal>
         );
