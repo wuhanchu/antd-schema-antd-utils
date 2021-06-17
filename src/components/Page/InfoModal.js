@@ -142,8 +142,10 @@ export class PureInfoModal extends PureComponent {
         return renderForm &&
         typeof renderForm === "function" ? (
             renderForm({
+                values,
+                form: this.formRef,
                 ...this.props,
-                values
+
             })
         ) : (
             <InfoForm {...otherProps} values={values} form={this.formRef}/>
