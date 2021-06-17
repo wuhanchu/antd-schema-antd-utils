@@ -129,9 +129,6 @@ export class PureInfoModal extends PureComponent {
      */
     renderForm() {
         const {values} = this.state
-        console.log(this.state)
-        console.log(this.props)
-        console.log(values)
         // 只传入InForm所需参数,避免console报错
         const {
             renderForm,
