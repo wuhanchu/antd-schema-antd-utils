@@ -303,8 +303,8 @@ export function createComponent(
                                     ? props.form.current.getFieldsValue()[key]
                                     : jsonViewerDefultValue
                                 : data[key]
-                                ? data[key]
-                                : jsonViewerDefultValue
+                                    ? data[key]
+                                    : jsonViewerDefultValue
                         }
                         collapseStringsAfterLength={12}
                         displayObjectSize
@@ -377,7 +377,7 @@ export function createComponent(
                             obj[key] = res;
                             try {
                                 props.form.current.setFieldsValue(obj);
-                            } catch (error) {}
+                            } catch (error) { }
                         }}
                         fontSize={14}
                         showPrintMargin
@@ -424,7 +424,7 @@ export function createComponent(
                             obj[key] = data.toHTML();
                             try {
                                 props.form.current.setFieldsValue(obj);
-                            } catch (error) {}
+                            } catch (error) { }
                         }}
                     />
                 </div>
@@ -506,12 +506,12 @@ export function createComponent(
             const searchOptions =
                 options.length > 10
                     ? {
-                          showSearch: true,
-                          optionFilterProp: 'children',
-                          filterOption: (input, option) =>
-                              option.props.children.toLowerCase &&
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0,
-                      }
+                        showSearch: true,
+                        optionFilterProp: 'children',
+                        filterOption: (input, option) =>
+                            option.props.children.toLowerCase &&
+                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0,
+                    }
                     : {};
 
             // create the select
@@ -773,15 +773,14 @@ export function createForm(
         }
     });
 
+    const initialValues = {};
+    Object.keys(data).forEach((key) => {
+        if (!_.isNil(data[key])) {
+            initialValues[key] = data[key];
+        }
+    });
     if (result instanceof Array) {
         // 清理 null 的数据
-        const initialValues = {};
-        Object.keys(data).forEach((key) => {
-            if (!_.isNil(data[key])) {
-                initialValues[key] = data[key];
-            }
-        });
-
         return (
             <Form
                 ref={form}
@@ -795,22 +794,29 @@ export function createForm(
         );
     }
     return (
-        <Tabs tabPosition="left">
-            {Object.keys(result).map((listKey) => (
-                <TabPane tab={listKey} key={listKey}>
-                    {result[listKey].length < 10
-                        ? renderInputList.bind(this)(result[listKey], colNum, formProps)
-                        : renderInputList.bind(this)(result[listKey], colNum, formProps)}
-                    {extend[listKey] || null}
-                </TabPane>
-            ))}
+        <Form
+            ref={form}
+            initialValues={initialValues}
+            labelCol={globalStyle.form.labelCol}
+            wrapperCol={globalStyle.form.wrapperCol}
+            {...formProps}
+        >
+            <Tabs tabPosition="left">
+                {Object.keys(result).map((listKey) => {
+                    return <TabPane tab={listKey} key={listKey}>
+                        {renderInputList.bind(this)(result[listKey], colNum, formProps)}
+                        {extend[listKey] || null}
+                    </TabPane>
+                })}
 
-            {Object.keys(otherTabs).map((key) => (
-                <TabPane tab={key} key={key}>
-                    {otherTabs[key]}
-                </TabPane>
-            ))}
-        </Tabs>
+                {Object.keys(otherTabs).map((key) => (
+                    <TabPane tab={key} key={key}>
+                        {otherTabs[key]}
+                    </TabPane>
+                ))}
+            </Tabs>
+        </Form>
+
     );
 }
 
