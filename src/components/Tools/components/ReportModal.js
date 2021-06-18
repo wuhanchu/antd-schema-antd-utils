@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Descriptions, Divider, Modal, Skeleton, Spin, Empty, Select } from 'antd';
+import { Button, Card, Descriptions, Divider, Modal, Skeleton, Spin, Empty, Select,Result } from 'antd';
 import ReactToPrint from 'react-to-print';
 
 /**
@@ -111,9 +111,10 @@ class ReportModal extends React.PureComponent {
                 }
             >
                 {!report ? (
-                    <Spin spinning tip="暂无质检报告">
-                        <Skeleton />
-                    </Spin>
+                    <Result
+                        status="warning"
+                        title="暂无质检报告！"
+                    />
                 ) : (
                     <div style={{maxHeight: '500px', overflowY: 'scroll'}} >
                     <div ref={(el) => (this.componentRef = el)}>
