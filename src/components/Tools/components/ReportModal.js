@@ -43,6 +43,29 @@ class ReportModal extends React.PureComponent {
         return result;
     }
 
+    async componentDidMount (){
+        if(this.props.service){
+            this.setState({isLoading: true})
+            const res = await this.props.service.get(this.props.args);
+            let report = [];
+            res.map((item, index) => {
+                if (
+                    item.final_report &&
+                    (item.status === 'ready' ||
+                        item.status === 'marked' ||
+                        item.status === 'inspected')
+                )
+                    report.push({ ...item.final_report, status: item.status });
+            });
+            console.log(report)
+            this.setState({
+                report: report[0] && report[0],
+                reportList: report,
+                isLoading: false
+            })
+        }
+    }
+
     renderContent(report, machineList, manList) {
         const checkStr = report.mark_different
             .replace(/ {3}/g, '  ')
@@ -75,9 +98,13 @@ class ReportModal extends React.PureComponent {
 
     render() {
         const { onOk, onCancel } = this.props;
-        let { report, file_path: filePath } = this.props;
+        const { isLoading } = this.state
+        let { report, file_path: filePath,  reportList } = this.props;
         if (this.state.report) {
             report = this.state.report;
+        }
+        if (this.state.reportList) {
+            reportList = this.state.reportList;
         }
 
         const manList = report && report.compare_str_valid.replace(/\*\*/g, '&').match(/.{1,66}/g);
@@ -85,7 +112,6 @@ class ReportModal extends React.PureComponent {
         const machineList =
             report && report.origin_str_valid.replace(/\*\*/g, '&').match(/.{1,66}/g);
 
-        console.log(report, machineList, manList);
         return (
             <Modal
                 title="标注结果对比报告"
@@ -110,16 +136,16 @@ class ReportModal extends React.PureComponent {
                     />
                 }
             >
-                {!report ? (
-                    <Result
+                {!report ? 
+                    (isLoading?<Skeleton />:<Result
                         status="warning"
                         title="暂无质检报告！"
-                    />
-                ) : (
+                    />)
+                 : (
                     <div style={{maxHeight: '500px', overflowY: 'scroll'}} >
                     <div ref={(el) => (this.componentRef = el)}>
                         <Card bordered={false}>
-                            {this.props.reportList && this.props.reportList.length && (
+                            {reportList && reportList.length && (
                                 <Select
                                     placeholder={'请选择数据'}
                                     defaultValue={0}
@@ -127,11 +153,11 @@ class ReportModal extends React.PureComponent {
                                     onChange={(item, data) => {
                                         this.beingIndex = 0;
                                         this.setState({
-                                            report: this.props.reportList[item],
+                                            report: reportList[item],
                                         });
                                     }}
                                 >
-                                    {this.props.reportList.map((item, index) => {
+                                    {reportList.map((item, index) => {
                                         return (
                                             <Select.Option value={index}>
                                                 {item.status === 'ready'
