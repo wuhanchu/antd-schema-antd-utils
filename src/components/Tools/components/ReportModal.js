@@ -131,7 +131,7 @@ class ReportModal extends React.PureComponent {
                 }}
                 footer={
                     <ReactToPrint
-                        trigger={() => <Button>导出报告</Button>}
+                        trigger={() => !report || isLoading ? <></> : <Button>导出报告</Button>}
                         content={() => this.componentRef}
                     />
                 }
