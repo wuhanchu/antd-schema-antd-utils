@@ -1,0 +1,141 @@
+import {
+    getHighlightEdges,
+    executeBatch,
+    isMind
+} from "@/outter/fr-schema-antd-utils/src/components/GGeditor/utils"
+import {
+    ItemState,
+    GraphNodeEvent,
+    GraphCanvasEvent,
+    GraphEdgeEvent
+} from "@/outter/fr-schema-antd-utils/src/components/GGeditor/common/constants"
+import { Behavior } from "@/outter/fr-schema-antd-utils/src/components/GGeditor/common/interfaces"
+import behaviorManager from "@/outter/fr-schema-antd-utils/src/components/GGeditor/common/behaviorManager"
+
+interface RecallEdgeBehavior extends Behavior {
+    /** 清空高亮状态 */
+    clearHighlightState(shouldUpdate?: (item: G6.Item) => boolean): void
+
+    /** 处理点击事件 */
+    handleNodeClick({ item }: { item: G6.Item }): void
+
+    /** 处理边线点击 */
+    handleEdgeClick({ item }: { item: G6.Item }): void
+
+    /** 处理画布点击 */
+    handleCanvasClick(): void
+
+    /** 高亮 */
+    highlightParentEdges(item: G6.Item): void
+
+    /** 查找脑图父级边线 */
+    findMindParentEdges(item: G6.Item, edges?: G6.Edge[]): G6.Edge[]
+
+    /** 查找流程图回溯边线 */
+    findFlowRecallEdges(item: G6.Item): G6.Edge[]
+}
+
+const recallEdgeBehavior: RecallEdgeBehavior = {
+    getEvents() {
+        return {
+            [`${GraphNodeEvent.onNodeClick}`]: "handleNodeClick",
+            [`${GraphCanvasEvent.onCanvasClick}`]: "handleCanvasClick",
+            [`${GraphEdgeEvent.onEdgeClick}`]: "handleEdgeClick"
+        }
+    },
+
+    clearHighlightState(shouldUpdate: Function = () => true) {
+        const { graph } = this
+
+        const selectedEdges = getHighlightEdges(graph)
+
+        executeBatch(graph, () => {
+            ;[...selectedEdges].forEach(item => {
+                if (shouldUpdate(item)) {
+                    graph.setItemState(item, ItemState.HighLight, false)
+                }
+            })
+        })
+    },
+
+    handleNodeClick({ item }) {
+        const { graph } = this
+
+        const isSelected = item.hasState(ItemState.Selected)
+
+        this.clearHighlightState(selectedItem => {
+            return selectedItem !== item
+        })
+
+        if (!isSelected) {
+            graph.setItemState(item, ItemState.Selected, true)
+        }
+    },
+
+    handleEdgeClick({ item }) {
+        const { graph } = this
+        const isSelected = item.hasState(ItemState.Selected)
+
+        this.clearHighlightState(selectedItem => {
+            return selectedItem !== item
+        })
+
+        if (!isSelected) {
+            graph.setItemState(item, ItemState.Selected, !isSelected)
+            graph.setItemState(item, ItemState.HighLight, !isSelected)
+        }
+    },
+
+    highlightParentEdges(item) {
+        const { graph } = this
+
+        this.clearHighlightState()
+
+        let edges = []
+
+        if (isMind(graph)) {
+            edges = this.findMindParentEdges(item)
+        }
+
+        if (!isMind(graph)) {
+            edges = this.findFlowRecallEdges(item)
+        }
+
+        if (edges.length > 0) {
+            edges.forEach(edge =>
+                graph.setItemState(edge, ItemState.HighLight, true)
+            )
+        }
+    },
+
+    findMindParentEdges(item, edges = []) {
+        const parentNode = item.get("parent")
+
+        if (!parentNode) {
+            return edges
+        }
+
+        const foundEdge = (item as G6.Node)
+            .getEdges()
+            .find(edge => edge.getModel().source === parentNode.getModel().id)
+
+        if (foundEdge) {
+            edges.push(foundEdge)
+        }
+
+        return this.findMindParentEdges(item.get("parent"), edges)
+    },
+
+    /**
+     * 暂时支持返回直接连到节点的边
+     * */
+    findFlowRecallEdges(item) {
+        return (item as G6.Node).getEdges()
+    },
+
+    handleCanvasClick() {
+        this.clearHighlightState()
+    }
+}
+
+behaviorManager.register("recall-edge", recallEdgeBehavior)
